@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Share } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -55,10 +54,10 @@ export default function CreateGameScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <LinearGradient colors={['#FF6B6B', '#4ECDC4']} style={styles.gradient}>
+        <View style={styles.gradient}>
           <ActivityIndicator size="large" color="#FFFFFF" />
           <Text style={styles.loadingText}>Creating game room...</Text>
-        </LinearGradient>
+        </View>
       </View>
     );
   }
@@ -66,19 +65,19 @@ export default function CreateGameScreen() {
   if (error) {
     return (
       <View style={styles.container}>
-        <LinearGradient colors={['#FF6B6B', '#4ECDC4']} style={styles.gradient}>
+        <View style={styles.gradient}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.button} onPress={createRoom}>
             <Text style={styles.buttonText}>Try Again</Text>
           </TouchableOpacity>
-        </LinearGradient>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#FF6B6B', '#4ECDC4']} style={styles.gradient}>
+      <View style={styles.gradient}>
         <View style={styles.content}>
           <Text style={styles.title}>🎮 Game Room Created!</Text>
           
@@ -114,7 +113,7 @@ export default function CreateGameScreen() {
             </TouchableOpacity>
           </View>
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 }
@@ -125,6 +124,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: '#FF6B6B',
     justifyContent: 'center',
     alignItems: 'center',
   },

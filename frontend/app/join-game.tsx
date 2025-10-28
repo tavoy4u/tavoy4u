@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -38,7 +37,7 @@ export default function JoinGameScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#4ECDC4', '#45B7D1']} style={styles.gradient}>
+      <View style={styles.gradient}>
         <View style={styles.content}>
           <Text style={styles.title}>🌴 Join Game</Text>
           
@@ -78,7 +77,7 @@ export default function JoinGameScreen() {
             </TouchableOpacity>
           </View>
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 }
@@ -89,6 +88,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: '#4ECDC4',
     justifyContent: 'center',
     alignItems: 'center',
   },

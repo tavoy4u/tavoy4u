@@ -1,14 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HowToPlayScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#45B7D1', '#4ECDC4']} style={styles.gradient}>
+      <View style={styles.gradient}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
           <Text style={styles.title}>📖 How to Play</Text>
 
@@ -74,7 +73,7 @@ export default function HowToPlayScreen() {
 
           <View style={styles.spacing} />
         </ScrollView>
-      </LinearGradient>
+      </View>
     </View>
   );
 }
@@ -85,6 +84,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: '#45B7D1',
   },
   scrollView: {
     flex: 1,
