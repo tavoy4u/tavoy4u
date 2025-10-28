@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     alignItems: 'center',
-    marginBottom: 60,
+    marginBottom: 40,
   },
   title: {
     fontSize: 32,
@@ -95,6 +95,56 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     opacity: 0.9,
     marginTop: 8,
+  },
+  modeContainer: {
+    width: '100%',
+    maxWidth: 400,
+    marginBottom: 32,
+  },
+  modeTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modeButtons: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  modeCard: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  americanCard: {
+    borderWidth: 3,
+    borderColor: '#FF6B6B',
+  },
+  jamaicanCard: {
+    borderWidth: 3,
+    borderColor: '#FFD700',
+  },
+  modeFlag: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  modeCardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  modeCardDesc: {
+    fontSize: 14,
+    color: '#666',
   },
   buttonContainer: {
     width: '100%',
