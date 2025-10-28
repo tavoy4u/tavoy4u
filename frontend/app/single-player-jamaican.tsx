@@ -562,6 +562,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
+  hoofWarning: {
+    backgroundColor: '#FF6B6B',
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 8,
+  },
+  hoofWarningText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 14,
+  },
   turnText: {
     fontSize: 20,
     fontWeight: 'bold',
