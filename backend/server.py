@@ -314,7 +314,7 @@ class ConnectionManager:
                 except Exception as e:
                     logger.error(f"Error broadcasting to room {room_code}: {e}")
     
-    def create_room(self) -> str:
+    def create_room(self, mode: str = "american") -> str:
         """Create a new game room with random code"""
         room_code = str(uuid.uuid4())[:6].upper()
         while room_code in self.games:
@@ -324,10 +324,11 @@ class ConnectionManager:
         game_state = GameState(
             room_code=room_code,
             board=CheckersEngine.create_initial_board(),
-            turn=PieceColor.RED
+            turn=PieceColor.RED,
+            mode=mode
         )
         self.games[room_code] = game_state
-        logger.info(f"Created room {room_code}")
+        logger.info(f"Created {mode} room {room_code}")
         return room_code
     
     def get_game(self, room_code: str) -> Optional[GameState]:
