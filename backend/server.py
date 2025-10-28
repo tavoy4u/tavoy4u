@@ -76,6 +76,8 @@ class GameState(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     red_player: Optional[str] = None
     black_player: Optional[str] = None
+    mode: str = "american"  # "american" or "jamaican"
+    capturing_piece: Optional[Square] = None  # For multi-capture chains
 
 class CheckersEngine:
     """American Checkers rules engine"""
