@@ -43,7 +43,7 @@ export default function HomeScreen() {
           {/* Footer */}
           <Text style={styles.footer}>Multiplayer • Cross-Platform • Real-time</Text>
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 }
