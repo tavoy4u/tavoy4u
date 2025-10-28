@@ -179,6 +179,7 @@ class CheckersBackendTester:
     
     def on_ws_error(self, ws, error):
         """WebSocket error handler"""
+        self.last_ws_error = str(error)
         print(f"WS Error: {error}")
     
     def on_ws_close(self, ws, close_status_code, close_msg):
