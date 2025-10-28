@@ -421,17 +421,17 @@ export default function JamaicanSinglePlayerScreen() {
         const move = allMoves.find(m => m.to_square.row === row && m.to_square.col === col);
         
         if (move) {
-          // JAMAICAN HOOF RULE: Check if THIS piece had captures but player chose not to capture
+          // JAMAICAN HOOF RULE: Check if THIS piece had tek but player chose not to tek
           const pieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, selectedPiece);
-          const pieceHadCaptures = pieceMoves.some(m => m.captured.length > 0);
+          const pieceHadTek = pieceMoves.some(m => m.captured.length > 0);
           
           let newState = JamaicanCheckersAI.applyMove(gameState, move);
           
-          // If THIS piece had captures but player chose a non-capture move, HOOF it!
-          if (pieceHadCaptures && move.captured.length === 0) {
+          // If THIS piece had tek but player chose a non-tek move, HOOF it!
+          if (pieceHadTek && move.captured.length === 0) {
             Alert.alert(
               '🐴 HOOFED!',
-              'This piece had a capture available! The piece is removed from the board.',
+              'This piece had a tek available! The piece is removed from the board.',
               [{ text: 'OK' }]
             );
             // Remove the piece that just moved (it gets hoofed)
