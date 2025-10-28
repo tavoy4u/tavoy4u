@@ -908,6 +908,13 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#FFD700',
   },
+  capturingPiece: {
+    shadowColor: '#4CAF50',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 10,
+  },
   crownIcon: {
     fontSize: SQUARE_SIZE * 0.4,
   },
