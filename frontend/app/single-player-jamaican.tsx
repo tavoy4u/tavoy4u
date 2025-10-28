@@ -404,7 +404,19 @@ export default function JamaicanSinglePlayerScreen() {
       const pieceHasTeks = pieceMoves.some(m => m.captured.length > 0);
       const pieceHasNonTeks = pieceMoves.some(m => m.captured.length === 0);
       
-      if (pieceHasTeks && pieceHasNonTeks) {
+      // Check if ANY OTHER piece has tek available
+      const allPlayerPieces = gameState.board.filter(p => p.color === 'red');
+      const otherPiecesWithTek = allPlayerPieces.filter(p => {
+        if (p.square.row === clickedPiece.square.row && p.square.col === clickedPiece.square.col) {
+          return false; // Skip the clicked piece
+        }
+        const moves = JamaicanCheckersAI.getLegalMoves(gameState, p);
+        return moves.some(m => m.captured.length > 0);
+      });
+      
+      if (otherPiecesWithTek.length > 0) {
+        setHoofWarning('🐴 Another piece has tek available! If you move this piece instead, that piece will be hoofed!');
+      } else if (pieceHasTeks && pieceHasNonTeks) {
         setHoofWarning('🐴 This piece has tek available! If you move without tekking, it will be hoofed!');
       } else {
         setHoofWarning(null);
@@ -421,24 +433,51 @@ export default function JamaicanSinglePlayerScreen() {
         const move = allMoves.find(m => m.to_square.row === row && m.to_square.col === col);
         
         if (move) {
-          // JAMAICAN HOOF RULE: Check if THIS piece had tek but player chose not to tek
-          const pieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, selectedPiece);
-          const pieceHadTek = pieceMoves.some(m => m.captured.length > 0);
-          
           let newState = JamaicanCheckersAI.applyMove(gameState, move);
+          let hoofedPieces: Piece[] = [];
           
-          // If THIS piece had tek but player chose a non-tek move, HOOF it!
-          if (pieceHadTek && move.captured.length === 0) {
-            Alert.alert(
-              '🐴 HOOFED!',
-              'This piece had a tek available! The piece is removed from the board.',
-              [{ text: 'OK' }]
-            );
-            // Remove the piece that just moved (it gets hoofed)
+          // JAMAICAN HOOF RULE #1: Check if THIS piece had tek but player chose not to tek
+          const selectedPieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, selectedPiece);
+          const selectedPieceHadTek = selectedPieceMoves.some(m => m.captured.length > 0);
+          
+          if (selectedPieceHadTek && move.captured.length === 0) {
+            // This piece gets hoofed
+            hoofedPieces.push({
+              ...selectedPiece,
+              square: move.to_square
+            });
+          }
+          
+          // JAMAICAN HOOF RULE #2: Check if OTHER pieces had tek but player moved this piece instead
+          const allPlayerPieces = gameState.board.filter(p => p.color === 'red');
+          const otherPiecesWithTek = allPlayerPieces.filter(p => {
+            if (p.square.row === selectedPiece.square.row && p.square.col === selectedPiece.square.col) {
+              return false; // Skip the piece we just moved
+            }
+            const moves = JamaicanCheckersAI.getLegalMoves(gameState, p);
+            return moves.some(m => m.captured.length > 0);
+          });
+          
+          // If we moved a piece that didn't tek when other pieces could tek, hoof those other pieces
+          if (move.captured.length === 0 && otherPiecesWithTek.length > 0) {
+            hoofedPieces.push(...otherPiecesWithTek);
+          }
+          
+          // Remove hoofed pieces
+          if (hoofedPieces.length > 0) {
+            const hoofedMessage = hoofedPieces.length === 1 
+              ? '🐴 HOOFED! A piece had tek available but wasn\'t used!'
+              : `🐴 HOOFED! ${hoofedPieces.length} pieces had tek available but weren't used!`;
+            
+            Alert.alert('🐴 HOOFED!', hoofedMessage, [{ text: 'OK' }]);
+            
+            // Remove all hoofed pieces from the board
             newState = {
               ...newState,
               board: newState.board.filter(p => 
-                !(p.square.row === move.to_square.row && p.square.col === move.to_square.col)
+                !hoofedPieces.some(hp => 
+                  p.square.row === hp.square.row && p.square.col === hp.square.col
+                )
               )
             };
           }
