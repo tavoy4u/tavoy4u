@@ -399,13 +399,13 @@ export default function JamaicanSinglePlayerScreen() {
       const moves = calculateLegalMoves(clickedPiece);
       setLegalMoves(moves);
       
-      // Check for hoof warning - does THIS piece have captures available?
+      // Check for hoof warning - does THIS piece have tek available?
       const pieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, clickedPiece);
-      const pieceHasCaptures = pieceMoves.some(m => m.captured.length > 0);
-      const pieceHasNonCaptures = pieceMoves.some(m => m.captured.length === 0);
+      const pieceHasTeks = pieceMoves.some(m => m.captured.length > 0);
+      const pieceHasNonTeks = pieceMoves.some(m => m.captured.length === 0);
       
-      if (pieceHasCaptures && pieceHasNonCaptures) {
-        setHoofWarning('🐴 This piece has captures available! If you move without capturing, it will be hoofed!');
+      if (pieceHasTeks && pieceHasNonTeks) {
+        setHoofWarning('🐴 This piece has tek available! If you move without tekking, it will be hoofed!');
       } else {
         setHoofWarning(null);
       }
