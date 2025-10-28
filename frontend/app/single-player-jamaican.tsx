@@ -678,12 +678,29 @@ export default function JamaicanSinglePlayerScreen() {
             piece.rank === 'king' && styles.kingPiece,
             isCapturing && styles.capturingPiece,
           ]}>
-            <Text style={styles.pieceIcon}>
-              {piece.color === 'red' 
-                ? getPieceIcon(playerClass, piece.rank)
-                : getPieceIcon(aiClass, piece.rank)
+            {(() => {
+              const classId = piece.color === 'red' ? playerClass : aiClass;
+              const pieceClassData = getPieceClass(classId);
+              
+              if (pieceClassData.hasCustomImage && pieceClassData.manImage) {
+                // Render image for DBZ pieces
+                const isKing = piece.rank === 'king';
+                return (
+                  <Image
+                    source={isKing ? pieceClassData.kingImage : pieceClassData.manImage}
+                    style={styles.pieceImage}
+                    resizeMode="contain"
+                  />
+                );
+              } else {
+                // Render emoji icon for other classes
+                return (
+                  <Text style={styles.pieceIcon}>
+                    {getPieceIcon(classId, piece.rank)}
+                  </Text>
+                );
               }
-            </Text>
+            })()}
           </View>
         )}
       </TouchableOpacity>
