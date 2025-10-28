@@ -133,37 +133,15 @@ class JamaicanCheckersAI {
     return board.find(p => p.square.row === square.row && p.square.col === square.col) || null;
   }
 
-  // JAMAICAN RULES: ALL pieces fly (not just kings) + Backwards Captures
+  // JAMAICAN RULES: Flying Kings + Multiple Tek (Captures) for all pieces
   static getLegalMoves(state: GameState, piece: Piece): Move[] {
     const moves: Move[] = [];
     const directions: [number, number][] = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
     
-    // JAMAICAN RULE: ALL PIECES FLY - Can move/capture multiple squares diagonally
-    for (const [dr, dc] of directions) {
-      // Simple flying moves (no capture)
-      if (piece.rank === 'man') {
-        // Men can only move forward one square when not capturing
-        const forwardDir = piece.color === 'red' ? -1 : 1;
-        if (dr === forwardDir) {
-          const newRow = piece.square.row + dr;
-          const newCol = piece.square.col + dc;
-          
-          if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
-            const targetPiece = this.getPieceAt(state.board, { row: newRow, col: newCol });
-            if (!targetPiece) {
-              const promotes = (piece.color === 'red' && newRow === 0) || 
-                             (piece.color === 'black' && newRow === 7);
-              moves.push({
-                from_square: piece.square,
-                to_square: { row: newRow, col: newCol },
-                captured: [],
-                promotes
-              });
-            }
-          }
-        }
-      } else {
-        // Kings can move any distance without capturing
+    // REGULAR MOVES (non-capturing)
+    if (piece.rank === 'king') {
+      // FLYING KINGS: Can move multiple squares diagonally
+      for (const [dr, dc] of directions) {
         for (let dist = 1; dist < 8; dist++) {
           const newRow = piece.square.row + dr * dist;
           const newCol = piece.square.col + dc * dist;
@@ -172,7 +150,7 @@ class JamaicanCheckersAI {
           
           const targetPiece = this.getPieceAt(state.board, { row: newRow, col: newCol });
           
-          if (targetPiece) break;
+          if (targetPiece) break; // Can't jump over pieces in regular moves
           
           moves.push({
             from_square: piece.square,
@@ -182,44 +160,91 @@ class JamaicanCheckersAI {
           });
         }
       }
+    } else {
+      // MEN: Move only 1 square forward diagonally
+      const forwardDir = piece.color === 'red' ? -1 : 1;
+      const moveDirections: [number, number][] = [[forwardDir, -1], [forwardDir, 1]];
       
-      // FLYING CAPTURES: ALL pieces can fly and land anywhere after capturing
-      for (let capDist = 1; capDist < 8; capDist++) {
-        const capRow = piece.square.row + dr * capDist;
-        const capCol = piece.square.col + dc * capDist;
+      for (const [dr, dc] of moveDirections) {
+        const newRow = piece.square.row + dr;
+        const newCol = piece.square.col + dc;
         
-        if (capRow < 0 || capRow >= 8 || capCol < 0 || capCol >= 8) break;
-        
-        const capPiece = this.getPieceAt(state.board, { row: capRow, col: capCol });
-        
-        if (capPiece && capPiece.color !== piece.color) {
-          // Try landing squares beyond the captured piece
-          for (let landDist = 1; landDist < 8; landDist++) {
-            const landRow = capRow + dr * landDist;
-            const landCol = capCol + dc * landDist;
+        if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+          if (!this.getPieceAt(state.board, { row: newRow, col: newCol })) {
+            const promotes = (piece.color === 'red' && newRow === 0) || 
+                           (piece.color === 'black' && newRow === 7);
             
-            if (landRow < 0 || landRow >= 8 || landCol < 0 || landCol >= 8) break;
-            
-            const landPiece = this.getPieceAt(state.board, { row: landRow, col: landCol });
-            
-            if (!landPiece) {
-              const promotes = piece.rank === 'man' &&
-                ((piece.color === 'red' && landRow === 0) || 
-                 (piece.color === 'black' && landRow === 7));
-              
-              moves.push({
-                from_square: piece.square,
-                to_square: { row: landRow, col: landCol },
-                captured: [{ row: capRow, col: capCol }],
-                promotes
-              });
-            } else {
-              break;
-            }
+            moves.push({
+              from_square: piece.square,
+              to_square: { row: newRow, col: newCol },
+              captured: [],
+              promotes
+            });
           }
-          break;
-        } else if (capPiece) {
-          break;
+        }
+      }
+    }
+    
+    // TEK MOVES (Captures) - ALL pieces can tek, kings can tek from distance
+    for (const [dr, dc] of directions) {
+      if (piece.rank === 'king') {
+        // FLYING KINGS: Can tek from any distance and land anywhere beyond
+        for (let capDist = 1; capDist < 8; capDist++) {
+          const capRow = piece.square.row + dr * capDist;
+          const capCol = piece.square.col + dc * capDist;
+          
+          if (capRow < 0 || capRow >= 8 || capCol < 0 || capCol >= 8) break;
+          
+          const capPiece = this.getPieceAt(state.board, { row: capRow, col: capCol });
+          
+          if (capPiece && capPiece.color !== piece.color) {
+            // Try landing squares beyond the captured piece
+            for (let landDist = 1; landDist < 8; landDist++) {
+              const landRow = capRow + dr * landDist;
+              const landCol = capCol + dc * landDist;
+              
+              if (landRow < 0 || landRow >= 8 || landCol < 0 || landCol >= 8) break;
+              
+              const landPiece = this.getPieceAt(state.board, { row: landRow, col: landCol });
+              
+              if (!landPiece) {
+                moves.push({
+                  from_square: piece.square,
+                  to_square: { row: landRow, col: landCol },
+                  captured: [{ row: capRow, col: capCol }],
+                  promotes: false
+                });
+              } else {
+                break;
+              }
+            }
+            break;
+          } else if (capPiece) {
+            break;
+          }
+        }
+      } else {
+        // MEN: Can tek in all directions (including backwards), jump only adjacent
+        const midRow = piece.square.row + dr;
+        const midCol = piece.square.col + dc;
+        const landRow = piece.square.row + 2 * dr;
+        const landCol = piece.square.col + 2 * dc;
+        
+        if (landRow >= 0 && landRow < 8 && landCol >= 0 && landCol < 8) {
+          const midPiece = this.getPieceAt(state.board, { row: midRow, col: midCol });
+          const landPiece = this.getPieceAt(state.board, { row: landRow, col: landCol });
+          
+          if (midPiece && midPiece.color !== piece.color && !landPiece) {
+            const promotes = (piece.color === 'red' && landRow === 0) || 
+                           (piece.color === 'black' && landRow === 7);
+            
+            moves.push({
+              from_square: piece.square,
+              to_square: { row: landRow, col: landCol },
+              captured: [{ row: midRow, col: midCol }],
+              promotes
+            });
+          }
         }
       }
     }
