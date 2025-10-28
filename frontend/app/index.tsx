@@ -19,6 +19,13 @@ export default function HomeScreen() {
           {/* Buttons */}
           <View style={styles.buttonContainer}>
             <TouchableOpacity 
+              style={[styles.button, styles.aiButton]}
+              onPress={() => router.push('/single-player')}
+            >
+              <Text style={styles.buttonText}>🤖 Play vs Computer</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
               style={[styles.button, styles.primaryButton]}
               onPress={() => router.push('/create-game')}
             >
