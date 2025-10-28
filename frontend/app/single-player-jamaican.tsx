@@ -883,6 +883,9 @@ const styles = StyleSheet.create({
   selectedSquare: {
     backgroundColor: '#FFD700',
   },
+  capturingSquare: {
+    backgroundColor: '#4CAF50',
+  },
   legalMoveSquare: {
     backgroundColor: '#98FB98',
   },
