@@ -345,8 +345,8 @@ async def root():
     return {"message": "Tropical Island Checkers API"}
 
 @api_router.post("/create-room")
-async def create_room():
-    room_code = manager.create_room()
+async def create_room(mode: str = "american"):
+    room_code = manager.create_room(mode)
     return {"room_code": room_code}
 
 @api_router.get("/room/{room_code}")
