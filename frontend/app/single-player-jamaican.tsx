@@ -392,6 +392,16 @@ export default function JamaicanSinglePlayerScreen() {
   const handleSquarePress = (row: number, col: number) => {
     if (gameState.winner || gameState.turn !== 'red' || thinking) return;
 
+    // If we're in the middle of a multi-capture, only allow continuing the chain
+    if (capturingPiece) {
+      const isLegalMove = legalMoves.some(m => m.row === row && m.col === col);
+      
+      if (isLegalMove) {
+        continueCapture(row, col);
+      }
+      return;
+    }
+
     const clickedPiece = gameState.board.find(
       p => p.square.row === row && p.square.col === col && p.color === 'red'
     );
@@ -401,16 +411,15 @@ export default function JamaicanSinglePlayerScreen() {
       const moves = calculateLegalMoves(clickedPiece);
       setLegalMoves(moves);
       
-      // Check for hoof warning - does THIS piece have tek available?
+      // Check for hoof warning
       const pieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, clickedPiece);
       const pieceHasTeks = pieceMoves.some(m => m.captured.length > 0);
       const pieceHasNonTeks = pieceMoves.some(m => m.captured.length === 0);
       
-      // Check if ANY OTHER piece has tek available
       const allPlayerPieces = gameState.board.filter(p => p.color === 'red');
       const otherPiecesWithTek = allPlayerPieces.filter(p => {
         if (p.square.row === clickedPiece.square.row && p.square.col === clickedPiece.square.col) {
-          return false; // Skip the clicked piece
+          return false;
         }
         const moves = JamaicanCheckersAI.getLegalMoves(gameState, p);
         return moves.some(m => m.captured.length > 0);
@@ -435,63 +444,203 @@ export default function JamaicanSinglePlayerScreen() {
         const move = allMoves.find(m => m.to_square.row === row && m.to_square.col === col);
         
         if (move) {
-          let newState = JamaicanCheckersAI.applyMove(gameState, move);
-          let hoofedPieces: Piece[] = [];
-          
-          // JAMAICAN HOOF RULE #1: Check if THIS piece had tek but player chose not to tek
-          const selectedPieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, selectedPiece);
-          const selectedPieceHadTek = selectedPieceMoves.some(m => m.captured.length > 0);
-          
-          if (selectedPieceHadTek && move.captured.length === 0) {
-            // This piece gets hoofed
-            hoofedPieces.push({
-              ...selectedPiece,
-              square: move.to_square
-            });
+          if (move.captured.length > 0) {
+            // This is a capture - start multi-capture sequence
+            startCapture(move);
+          } else {
+            // Regular non-capture move - check hoof rules
+            completeNonCaptureMove(move);
           }
-          
-          // JAMAICAN HOOF RULE #2: Check if OTHER pieces had tek but player moved this piece instead
-          const allPlayerPieces = gameState.board.filter(p => p.color === 'red');
-          const otherPiecesWithTek = allPlayerPieces.filter(p => {
-            if (p.square.row === selectedPiece.square.row && p.square.col === selectedPiece.square.col) {
-              return false; // Skip the piece we just moved
-            }
-            const moves = JamaicanCheckersAI.getLegalMoves(gameState, p);
-            return moves.some(m => m.captured.length > 0);
-          });
-          
-          // If we moved a piece that didn't tek when other pieces could tek, hoof those other pieces
-          if (move.captured.length === 0 && otherPiecesWithTek.length > 0) {
-            hoofedPieces.push(...otherPiecesWithTek);
-          }
-          
-          // Remove hoofed pieces
-          if (hoofedPieces.length > 0) {
-            const hoofedMessage = hoofedPieces.length === 1 
-              ? '🐴 HOOFED! A piece had tek available but wasn\'t used!'
-              : `🐴 HOOFED! ${hoofedPieces.length} pieces had tek available but weren't used!`;
-            
-            Alert.alert('🐴 HOOFED!', hoofedMessage, [{ text: 'OK' }]);
-            
-            // Remove all hoofed pieces from the board
-            newState = {
-              ...newState,
-              board: newState.board.filter(p => 
-                !hoofedPieces.some(hp => 
-                  p.square.row === hp.square.row && p.square.col === hp.square.col
-                )
-              )
-            };
-          }
-          
-          setGameState(newState);
         }
       }
       
       setSelectedPiece(null);
-      setLegalMoves([]);
       setHoofWarning(null);
     }
+  };
+
+  const startCapture = (move: Move) => {
+    if (!selectedPiece) return;
+
+    // Update board with the capture
+    const newBoard = gameState.board.map(p => ({ ...p, square: { ...p.square } }));
+    
+    // Move the piece
+    const movingPiece = newBoard.find(p => 
+      p.square.row === move.from_square.row && p.square.col === move.from_square.col
+    );
+    
+    if (movingPiece) {
+      movingPiece.square = move.to_square;
+      
+      // Check for promotion
+      if (move.promotes) {
+        movingPiece.rank = 'king';
+      }
+    }
+    
+    // Remove captured pieces
+    const boardAfterCapture = newBoard.filter(p => 
+      !move.captured.some(cap => p.square.row === cap.row && p.square.col === cap.col)
+    );
+    
+    // Update game state visually
+    const updatedState = {
+      ...gameState,
+      board: boardAfterCapture
+    };
+    setGameState(updatedState);
+    
+    // Add to capture chain
+    const newCaptureChain = [...captureChain, ...move.captured];
+    setCaptureChain(newCaptureChain);
+    
+    // Check if more captures are available from new position
+    const continuingPiece: Piece = {
+      ...selectedPiece,
+      square: move.to_square,
+      rank: move.promotes ? 'king' : selectedPiece.rank
+    };
+    
+    const furtherCaptures = JamaicanCheckersAI.getLegalMoves(updatedState, continuingPiece)
+      .filter(m => m.captured.length > 0);
+    
+    if (furtherCaptures.length > 0) {
+      // MULTI-CAPTURE: More captures available!
+      setCapturingPiece(continuingPiece);
+      setLegalMoves(furtherCaptures.map(m => m.to_square));
+      setHoofWarning('🔗 Continue capturing! Select next tek.');
+    } else {
+      // Capture chain complete - end turn
+      completeCapture(updatedState, newCaptureChain);
+    }
+  };
+
+  const continueCapture = (row: number, col: number) => {
+    if (!capturingPiece) return;
+
+    const allMoves = JamaicanCheckersAI.getLegalMoves(gameState, capturingPiece);
+    const move = allMoves.find(m => 
+      m.to_square.row === row && m.to_square.col === col && m.captured.length > 0
+    );
+    
+    if (move) {
+      // Update board with next capture in chain
+      const newBoard = gameState.board.map(p => ({ ...p, square: { ...p.square } }));
+      
+      const movingPiece = newBoard.find(p => 
+        p.square.row === capturingPiece.square.row && p.square.col === capturingPiece.square.col
+      );
+      
+      if (movingPiece) {
+        movingPiece.square = move.to_square;
+        
+        if (move.promotes) {
+          movingPiece.rank = 'king';
+        }
+      }
+      
+      const boardAfterCapture = newBoard.filter(p => 
+        !move.captured.some(cap => p.square.row === cap.row && p.square.col === cap.col)
+      );
+      
+      const updatedState = {
+        ...gameState,
+        board: boardAfterCapture
+      };
+      setGameState(updatedState);
+      
+      const newCaptureChain = [...captureChain, ...move.captured];
+      setCaptureChain(newCaptureChain);
+      
+      // Check for more captures
+      const continuingPiece: Piece = {
+        ...capturingPiece,
+        square: move.to_square,
+        rank: move.promotes ? 'king' : capturingPiece.rank
+      };
+      
+      const furtherCaptures = JamaicanCheckersAI.getLegalMoves(updatedState, continuingPiece)
+        .filter(m => m.captured.length > 0);
+      
+      if (furtherCaptures.length > 0) {
+        setCapturingPiece(continuingPiece);
+        setLegalMoves(furtherCaptures.map(m => m.to_square));
+      } else {
+        completeCapture(updatedState, newCaptureChain);
+      }
+    }
+  };
+
+  const completeCapture = (finalState: GameState, chain: Square[]) => {
+    // Capture chain is complete - switch turn
+    const newState = {
+      ...finalState,
+      turn: 'black' as PieceColor,
+      winner: JamaicanCheckersAI.checkWinner({ ...finalState, turn: 'black' })
+    };
+    
+    setGameState(newState);
+    setCapturingPiece(null);
+    setLegalMoves([]);
+    setCaptureChain([]);
+    setHoofWarning(null);
+    
+    if (chain.length > 1) {
+      setTimeout(() => {
+        Alert.alert('🔗 Multi-Tek!', `You captured ${chain.length} pieces in one turn!`, [{ text: 'Nice!' }]);
+      }, 300);
+    }
+  };
+
+  const completeNonCaptureMove = (move: Move) => {
+    if (!selectedPiece) return;
+
+    let newState = JamaicanCheckersAI.applyMove(gameState, move);
+    let hoofedPieces: Piece[] = [];
+    
+    // Check hoof rules
+    const selectedPieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, selectedPiece);
+    const selectedPieceHadTek = selectedPieceMoves.some(m => m.captured.length > 0);
+    
+    if (selectedPieceHadTek && move.captured.length === 0) {
+      hoofedPieces.push({
+        ...selectedPiece,
+        square: move.to_square
+      });
+    }
+    
+    const allPlayerPieces = gameState.board.filter(p => p.color === 'red');
+    const otherPiecesWithTek = allPlayerPieces.filter(p => {
+      if (p.square.row === selectedPiece.square.row && p.square.col === selectedPiece.square.col) {
+        return false;
+      }
+      const moves = JamaicanCheckersAI.getLegalMoves(gameState, p);
+      return moves.some(m => m.captured.length > 0);
+    });
+    
+    if (move.captured.length === 0 && otherPiecesWithTek.length > 0) {
+      hoofedPieces.push(...otherPiecesWithTek);
+    }
+    
+    if (hoofedPieces.length > 0) {
+      const hoofedMessage = hoofedPieces.length === 1 
+        ? '🐴 HOOFED! A piece had tek available but wasn\'t used!'
+        : `🐴 HOOFED! ${hoofedPieces.length} pieces had tek available but weren't used!`;
+      
+      Alert.alert('🐴 HOOFED!', hoofedMessage, [{ text: 'OK' }]);
+      
+      newState = {
+        ...newState,
+        board: newState.board.filter(p => 
+          !hoofedPieces.some(hp => 
+            p.square.row === hp.square.row && p.square.col === hp.square.col
+          )
+        )
+      };
+    }
+    
+    setGameState(newState);
   };
 
   const renderSquare = (row: number, col: number) => {
