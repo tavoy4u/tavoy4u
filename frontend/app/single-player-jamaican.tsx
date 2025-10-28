@@ -696,7 +696,14 @@ export default function JamaicanSinglePlayerScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>🇯🇲 Jamaican Checkers</Text>
         
-        {hoofWarning && (
+        {capturingPiece && (
+          <View style={styles.multiCaptureIndicator}>
+            <Text style={styles.multiCaptureText}>🔗 MULTI-TEK IN PROGRESS!</Text>
+            <Text style={styles.multiCaptureSubtext}>Select next capture to continue chain</Text>
+          </View>
+        )}
+        
+        {hoofWarning && !capturingPiece && (
           <View style={styles.hoofWarning}>
             <Text style={styles.hoofWarningText}>{hoofWarning}</Text>
           </View>
