@@ -374,14 +374,13 @@ export default function JamaicanSinglePlayerScreen() {
       const moves = calculateLegalMoves(clickedPiece);
       setLegalMoves(moves);
       
-      // Check for hoof warning
-      const allPlayerMoves = JamaicanCheckersAI.getAllLegalMoves(gameState);
-      const hasCaptures = allPlayerMoves.some(m => m.captured.length > 0);
-      const selectedPieceHasCapture = JamaicanCheckersAI.getLegalMoves(gameState, clickedPiece)
-        .some(m => m.captured.length > 0);
+      // Check for hoof warning - does THIS piece have captures available?
+      const pieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, clickedPiece);
+      const pieceHasCaptures = pieceMoves.some(m => m.captured.length > 0);
+      const pieceHasNonCaptures = pieceMoves.some(m => m.captured.length === 0);
       
-      if (hasCaptures && !selectedPieceHasCapture) {
-        setHoofWarning('⚠️ This piece has no captures! If you move it, it will be "hoofed" (removed)');
+      if (pieceHasCaptures && pieceHasNonCaptures) {
+        setHoofWarning('🐴 This piece has captures available! If you move without capturing, it will be hoofed!');
       } else {
         setHoofWarning(null);
       }
@@ -397,23 +396,20 @@ export default function JamaicanSinglePlayerScreen() {
         const move = allMoves.find(m => m.to_square.row === row && m.to_square.col === col);
         
         if (move) {
-          // JAMAICAN HOOF RULE: Check if player is avoiding a capture
-          const allPlayerMoves = JamaicanCheckersAI.getAllLegalMoves(gameState);
-          const hasOtherCaptures = allPlayerMoves.some(m => 
-            m.captured.length > 0 && 
-            (m.from_square.row !== move.from_square.row || m.from_square.col !== move.from_square.col)
-          );
+          // JAMAICAN HOOF RULE: Check if THIS piece had captures but player chose not to capture
+          const pieceMoves = JamaicanCheckersAI.getLegalMoves(gameState, selectedPiece);
+          const pieceHadCaptures = pieceMoves.some(m => m.captured.length > 0);
           
           let newState = JamaicanCheckersAI.applyMove(gameState, move);
           
-          // If there were captures available but this move didn't capture, remove the piece (HOOF)
-          if (hasOtherCaptures && move.captured.length === 0) {
+          // If THIS piece had captures but player chose a non-capture move, HOOF it!
+          if (pieceHadCaptures && move.captured.length === 0) {
             Alert.alert(
-              '🐴 HOOF!',
-              'You had a capture available! Your piece is removed from the board.',
+              '🐴 HOOFED!',
+              'This piece had a capture available! The piece is removed from the board.',
               [{ text: 'OK' }]
             );
-            // Remove the piece that just moved
+            // Remove the piece that just moved (it gets hoofed)
             newState = {
               ...newState,
               board: newState.board.filter(p => 
