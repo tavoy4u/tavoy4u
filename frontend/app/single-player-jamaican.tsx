@@ -647,6 +647,7 @@ export default function JamaicanSinglePlayerScreen() {
     const isDark = (row + col) % 2 === 1;
     const piece = gameState.board.find(p => p.square.row === row && p.square.col === col);
     const isSelected = selectedPiece?.square.row === row && selectedPiece?.square.col === col;
+    const isCapturing = capturingPiece?.square.row === row && capturingPiece?.square.col === col;
     const isLegalMove = legalMoves.some(m => m.row === row && m.col === col);
 
     return (
@@ -656,6 +657,7 @@ export default function JamaicanSinglePlayerScreen() {
           styles.square,
           isDark ? styles.darkSquare : styles.lightSquare,
           isSelected && styles.selectedSquare,
+          isCapturing && styles.capturingSquare,
           isLegalMove && styles.legalMoveSquare,
         ]}
         onPress={() => handleSquarePress(row, col)}
@@ -665,6 +667,7 @@ export default function JamaicanSinglePlayerScreen() {
             styles.piece,
             piece.color === 'red' ? styles.redPiece : styles.blackPiece,
             piece.rank === 'king' && styles.kingPiece,
+            isCapturing && styles.capturingPiece,
           ]}>
             {piece.rank === 'king' && (
               <Text style={styles.crownIcon}>👑</Text>
