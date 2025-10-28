@@ -22,10 +22,11 @@ export default function ModeSelectScreen() {
             <View style={styles.rulesCard}>
               <Text style={styles.rulesTitle}>Jamaican Rules:</Text>
               <Text style={styles.rulesText}>
-                ✈️ All Pieces Fly - Move multiple squares{'\n'}
-                ⬅️ Backwards Captures - All pieces can capture backwards{'\n'}
-                🎯 Maximum Capture - Must take most pieces{'\n'}
-                🐴 Hoof Rule - Miss a capture? Piece removed!
+                👑 Flying Kings - Kings move multiple squares{'\n'}
+                ⬅️ Backwards Tek - All pieces tek backwards{'\n'}
+                🔗 Multiple Tek - Chain multiple teks in one turn{'\n'}
+                🎯 Maximum Tek - Must tek the most pieces{'\n'}
+                🐴 Hoof Rule - Miss a tek? Piece removed!
               </Text>
             </View>
           )}
