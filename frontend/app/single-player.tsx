@@ -44,7 +44,6 @@ class CheckersAI {
       const value = piece.rank === 'king' ? 3 : 1;
       if (piece.color === color) {
         score += value;
-        // Bonus for advanced position
         if (color === 'red') {
           score += (7 - piece.square.row) * 0.1;
         } else {
@@ -63,7 +62,6 @@ class CheckersAI {
     
     if (legalMoves.length === 0) return null;
     
-    // Prioritize captures
     const captureMoves = legalMoves.filter(m => m.captured.length > 0);
     const movesToConsider = captureMoves.length > 0 ? captureMoves : legalMoves;
     
@@ -74,25 +72,12 @@ class CheckersAI {
       const newState = this.applyMove(state, move);
       let score = this.evaluateBoard(newState.board, state.turn);
       
-      // Bonus for captures
       score += move.captured.length * 2;
-      
-      // Bonus for king promotion
       if (move.promotes) score += 1.5;
       
-      // Look ahead one move
       const opponentMoves = this.getAllLegalMoves(newState);
       if (opponentMoves.length === 0) {
-        score += 100; // Winning move
-      } else {
-        // Consider best opponent response
-        let worstOpponentScore = Infinity;
-        for (const oppMove of opponentMoves.slice(0, 5)) {
-          const afterOpp = this.applyMove(newState, oppMove);
-          const oppScore = this.evaluateBoard(afterOpp.board, state.turn);
-          worstOpponentScore = Math.min(worstOpponentScore, oppScore);
-        }
-        score += worstOpponentScore * 0.5;
+        score += 100;
       }
       
       if (score > bestScore) {
@@ -148,7 +133,6 @@ class CheckersAI {
         ? [[-1, -1], [-1, 1]]
         : [[1, -1], [1, 1]];
 
-    // Simple moves
     for (const [dr, dc] of directions) {
       const newRow = piece.square.row + dr;
       const newCol = piece.square.col + dc;
@@ -168,7 +152,6 @@ class CheckersAI {
       }
     }
 
-    // Capture moves
     for (const [dr, dc] of [[-1, -1], [-1, 1], [1, -1], [1, 1]]) {
       const midRow = piece.square.row + dr;
       const midCol = piece.square.col + dc;
