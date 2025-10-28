@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: '#45B7D1',
   },
   content: {
     flex: 1,
