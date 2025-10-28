@@ -792,6 +792,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
+  multiCaptureIndicator: {
+    backgroundColor: '#4CAF50',
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 8,
+  },
+  multiCaptureText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  multiCaptureSubtext: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontSize: 12,
+    marginTop: 4,
+  },
   turnText: {
     fontSize: 20,
     fontWeight: 'bold',
