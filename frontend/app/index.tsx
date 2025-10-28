@@ -1,17 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#FF6B6B', '#4ECDC4', '#45B7D1']}
-        style={styles.gradient}>
-        
+      <View style={styles.gradient}>
         <View style={styles.content}>
           {/* Title */}
           <View style={styles.titleContainer}>
