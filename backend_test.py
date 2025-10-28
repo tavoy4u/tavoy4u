@@ -489,6 +489,7 @@ class CheckersBackendTester:
         
         # Game Engine Tests
         self.test_game_engine_logic()
+        self.test_board_validation()
         
         # Print results
         self.results.print_summary()
