@@ -16,36 +16,38 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Tropical Adventure Edition</Text>
           </View>
 
-          {/* Buttons */}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={[styles.button, styles.aiButton]}
-              onPress={() => router.push('/single-player')}
-            >
-              <Text style={styles.buttonText}>🤖 Play vs Computer</Text>
-            </TouchableOpacity>
+          {/* Mode Selection */}
+          <View style={styles.modeContainer}>
+            <Text style={styles.modeTitle}>Choose Your Style</Text>
+            
+            <View style={styles.modeButtons}>
+              <TouchableOpacity 
+                style={[styles.modeCard, styles.americanCard]}
+                onPress={() => router.push('/mode-select?mode=american')}
+              >
+                <Text style={styles.modeFlag}>🇺🇸</Text>
+                <Text style={styles.modeCardTitle}>American</Text>
+                <Text style={styles.modeCardDesc}>Classic Rules</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.button, styles.primaryButton]}
-              onPress={() => router.push('/create-game')}
-            >
-              <Text style={styles.buttonText}>🎮 Create Game</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.button, styles.secondaryButton]}
-              onPress={() => router.push('/join-game')}
-            >
-              <Text style={styles.buttonText}>🌴 Join Game</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.button, styles.tertiaryButton]}
-              onPress={() => router.push('/how-to-play')}
-            >
-              <Text style={styles.buttonTextDark}>📖 How to Play</Text>
-            </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modeCard, styles.jamaicanCard]}
+                onPress={() => router.push('/mode-select?mode=jamaican')}
+              >
+                <Text style={styles.modeFlag}>🇯🇲</Text>
+                <Text style={styles.modeCardTitle}>Jamaican</Text>
+                <Text style={styles.modeCardDesc}>Flying Kings</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+
+          {/* How to Play Button */}
+          <TouchableOpacity 
+            style={[styles.button, styles.tertiaryButton]}
+            onPress={() => router.push('/how-to-play')}
+          >
+            <Text style={styles.buttonTextDark}>📖 How to Play</Text>
+          </TouchableOpacity>
 
           {/* Footer */}
           <Text style={styles.footer}>Multiplayer • Cross-Platform • Real-time</Text>
