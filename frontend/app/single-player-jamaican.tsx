@@ -334,6 +334,8 @@ export default function JamaicanSinglePlayerScreen() {
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [thinking, setThinking] = useState(false);
   const [hoofWarning, setHoofWarning] = useState<string | null>(null);
+  const [capturingPiece, setCapturingPiece] = useState<Piece | null>(null); // Piece in middle of multi-capture
+  const [captureChain, setCaptureChain] = useState<Square[]>([]); // Track captured pieces in chain
 
   useEffect(() => {
     if (gameState.turn === 'black' && !gameState.winner) {
