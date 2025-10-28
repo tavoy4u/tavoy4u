@@ -485,6 +485,12 @@ export default function JamaicanSinglePlayerScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>🇯🇲 Jamaican Checkers</Text>
         
+        {hoofWarning && (
+          <View style={styles.hoofWarning}>
+            <Text style={styles.hoofWarningText}>{hoofWarning}</Text>
+          </View>
+        )}
+        
         <Text style={[styles.turnText, thinking && styles.thinkingText]}>
           {gameState.winner 
             ? `🏆 ${gameState.winner === 'red' ? 'YOU WIN!' : 'AI WINS!'}`
