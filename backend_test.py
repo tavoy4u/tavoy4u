@@ -222,7 +222,11 @@ class CheckersBackendTester:
                 timeout -= 0.1
             
             if not self.ws_connected:
-                self.results.add_result("WebSocket Connection", False, "Failed to establish connection")
+                # Check if this is the known Kubernetes ingress WebSocket issue
+                if "502 Bad Gateway" in str(self.ws_messages) or "502" in str(getattr(self, 'last_ws_error', '')):
+                    self.results.add_result("WebSocket Connection", False, "Infrastructure issue: Kubernetes ingress not configured for WebSocket upgrades (502 Bad Gateway). WebSocket code appears correct but requires ingress configuration.")
+                else:
+                    self.results.add_result("WebSocket Connection", False, "Failed to establish connection")
                 return
             
             # Test JOIN message
