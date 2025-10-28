@@ -20,11 +20,12 @@ export default function ModeSelectScreen() {
           
           {isJamaican && (
             <View style={styles.rulesCard}>
-              <Text style={styles.rulesTitle}>Special Rules:</Text>
+              <Text style={styles.rulesTitle}>Jamaican Rules:</Text>
               <Text style={styles.rulesText}>
-                🦅 Flying Kings - Move multiple squares{'\n'}
-                ⬅️ Backwards Captures - Men can capture backwards{'\n'}
-                🎯 Maximum Capture - Must take most pieces
+                ✈️ All Pieces Fly - Move multiple squares{'\n'}
+                ⬅️ Backwards Captures - All pieces can capture backwards{'\n'}
+                🎯 Maximum Capture - Must take most pieces{'\n'}
+                🐴 Hoof Rule - Miss a capture? Piece removed!
               </Text>
             </View>
           )}
