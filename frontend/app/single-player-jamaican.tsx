@@ -371,7 +371,21 @@ export default function JamaicanSinglePlayerScreen() {
 
     if (clickedPiece) {
       setSelectedPiece(clickedPiece);
-      setLegalMoves(calculateLegalMoves(clickedPiece));
+      const moves = calculateLegalMoves(clickedPiece);
+      setLegalMoves(moves);
+      
+      // Check for hoof warning
+      const allPlayerMoves = JamaicanCheckersAI.getAllLegalMoves(gameState);
+      const hasCaptures = allPlayerMoves.some(m => m.captured.length > 0);
+      const selectedPieceHasCapture = JamaicanCheckersAI.getLegalMoves(gameState, clickedPiece)
+        .some(m => m.captured.length > 0);
+      
+      if (hasCaptures && !selectedPieceHasCapture) {
+        setHoofWarning('⚠️ This piece has no captures! If you move it, it will be "hoofed" (removed)');
+      } else {
+        setHoofWarning(null);
+      }
+      
       return;
     }
 
@@ -383,13 +397,38 @@ export default function JamaicanSinglePlayerScreen() {
         const move = allMoves.find(m => m.to_square.row === row && m.to_square.col === col);
         
         if (move) {
-          const newState = JamaicanCheckersAI.applyMove(gameState, move);
+          // JAMAICAN HOOF RULE: Check if player is avoiding a capture
+          const allPlayerMoves = JamaicanCheckersAI.getAllLegalMoves(gameState);
+          const hasOtherCaptures = allPlayerMoves.some(m => 
+            m.captured.length > 0 && 
+            (m.from_square.row !== move.from_square.row || m.from_square.col !== move.from_square.col)
+          );
+          
+          let newState = JamaicanCheckersAI.applyMove(gameState, move);
+          
+          // If there were captures available but this move didn't capture, remove the piece (HOOF)
+          if (hasOtherCaptures && move.captured.length === 0) {
+            Alert.alert(
+              '🐴 HOOF!',
+              'You had a capture available! Your piece is removed from the board.',
+              [{ text: 'OK' }]
+            );
+            // Remove the piece that just moved
+            newState = {
+              ...newState,
+              board: newState.board.filter(p => 
+                !(p.square.row === move.to_square.row && p.square.col === move.to_square.col)
+              )
+            };
+          }
+          
           setGameState(newState);
         }
       }
       
       setSelectedPiece(null);
       setLegalMoves([]);
+      setHoofWarning(null);
     }
   };
 
