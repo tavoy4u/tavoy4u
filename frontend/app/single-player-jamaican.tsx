@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { getPieceIcon, getPieceClass } from '../utils/pieceClasses';
 
 const { width } = Dimensions.get('window');
 const BOARD_SIZE = Math.min(width - 32, 500);
