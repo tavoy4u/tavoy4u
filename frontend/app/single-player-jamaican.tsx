@@ -308,6 +308,7 @@ export default function JamaicanSinglePlayerScreen() {
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [thinking, setThinking] = useState(false);
+  const [hoofWarning, setHoofWarning] = useState<string | null>(null);
 
   useEffect(() => {
     if (gameState.turn === 'black' && !gameState.winner) {
