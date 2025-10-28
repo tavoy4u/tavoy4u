@@ -927,6 +927,9 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 10,
   },
+  pieceIcon: {
+    fontSize: SQUARE_SIZE * 0.5,
+  },
   crownIcon: {
     fontSize: SQUARE_SIZE * 0.4,
   },
