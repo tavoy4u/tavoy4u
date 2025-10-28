@@ -13,6 +13,15 @@ import json
 import asyncio
 from enum import Enum
 
+# Import Jamaican engine
+try:
+    from jamaican_engine import JamaicanCheckersEngine
+    JAMAICAN_ENGINE_AVAILABLE = True
+except ImportError:
+    JAMAICAN_ENGINE_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("Jamaican engine not available")
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
