@@ -110,6 +110,9 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
+  aiButton: {
+    backgroundColor: '#9B59B6',
+  },
   primaryButton: {
     backgroundColor: '#FF6B6B',
   },
