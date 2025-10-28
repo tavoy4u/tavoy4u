@@ -398,10 +398,80 @@ class CheckersBackendTester:
                     self.results.add_result("Game Engine - Initial Setup", False, f"Initial piece should be MAN, got: {piece['rank']}")
                     return
             
+            # Verify game state structure
+            required_fields = ["id", "room_code", "board", "turn", "history", "winner", "created_at"]
+            missing_fields = [field for field in required_fields if field not in game_state]
+            if missing_fields:
+                self.results.add_result("Game Engine - State Structure", False, f"Missing fields: {missing_fields}")
+                return
+            
+            # Verify initial game state values
+            if game_state["history"] != []:
+                self.results.add_result("Game Engine - Initial State", False, f"History should be empty initially, got: {game_state['history']}")
+                return
+            
+            if game_state["winner"] is not None:
+                self.results.add_result("Game Engine - Initial State", False, f"Winner should be None initially, got: {game_state['winner']}")
+                return
+            
+            if game_state["red_player"] is not None or game_state["black_player"] is not None:
+                self.results.add_result("Game Engine - Initial State", False, f"Players should be None initially")
+                return
+            
             self.results.add_result("Game Engine - Initial Setup", True, "All initial setup validations passed")
+            self.results.add_result("Game Engine - State Structure", True, "Game state structure is correct")
+            self.results.add_result("Game Engine - Initial State", True, "Initial game state values are correct")
             
         except Exception as e:
             self.results.add_result("Game Engine Logic", False, f"Engine test failed: {str(e)}")
+    
+    def test_board_validation(self):
+        """Test board position validation logic"""
+        try:
+            # Create a room to test with
+            response = requests.post(f"{API_BASE}/create-room", timeout=10)
+            if response.status_code != 200:
+                self.results.add_result("Board Validation", False, "Could not create test room")
+                return
+            
+            test_room = response.json()["room_code"]
+            response = requests.get(f"{API_BASE}/room/{test_room}", timeout=10)
+            game_state = response.json()
+            board = game_state["board"]
+            
+            # Test dark square validation
+            dark_squares = []
+            light_squares = []
+            for row in range(8):
+                for col in range(8):
+                    if (row + col) % 2 == 1:
+                        dark_squares.append((row, col))
+                    else:
+                        light_squares.append((row, col))
+            
+            # Verify all pieces are on dark squares
+            piece_positions = [(p["square"]["row"], p["square"]["col"]) for p in board]
+            for pos in piece_positions:
+                if pos not in dark_squares:
+                    self.results.add_result("Board Validation - Dark Squares", False, f"Piece found on light square: {pos}")
+                    return
+            
+            # Verify no pieces on light squares
+            for pos in light_squares:
+                if pos in piece_positions:
+                    self.results.add_result("Board Validation - Light Squares", False, f"Piece incorrectly placed on light square: {pos}")
+                    return
+            
+            # Verify middle rows are empty (rows 3 and 4)
+            middle_pieces = [p for p in board if p["square"]["row"] in [3, 4]]
+            if middle_pieces:
+                self.results.add_result("Board Validation - Middle Rows", False, f"Found pieces in middle rows: {[(p['square']['row'], p['square']['col']) for p in middle_pieces]}")
+                return
+            
+            self.results.add_result("Board Validation", True, "Board position validation passed")
+            
+        except Exception as e:
+            self.results.add_result("Board Validation", False, f"Board validation test failed: {str(e)}")
     
     def run_all_tests(self):
         """Run all backend tests"""
