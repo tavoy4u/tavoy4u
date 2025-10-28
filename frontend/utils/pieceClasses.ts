@@ -6,8 +6,9 @@ export interface PieceClass {
   kingIcon: string;
   description: string;
   color: string;
-  manImage?: string; // Will be replaced with actual 2D model URLs
-  kingImage?: string; // Will be replaced with actual 2D model URLs
+  manImage?: any; // Image source for man piece
+  kingImage?: any; // Image source for king piece
+  hasCustomImage?: boolean; // Flag to indicate if custom image is available
 }
 
 export const PIECE_CLASSES: Record<string, PieceClass> = {
@@ -19,6 +20,7 @@ export const PIECE_CLASSES: Record<string, PieceClass> = {
     kingIcon: '👑',
     description: 'Tropical island fighters with vibrant energy',
     color: '#FFD700',
+    hasCustomImage: false,
   },
   european: {
     id: 'european',
@@ -28,6 +30,7 @@ export const PIECE_CLASSES: Record<string, PieceClass> = {
     kingIcon: '♔',
     description: 'Medieval warriors with honor and strength',
     color: '#4169E1',
+    hasCustomImage: false,
   },
   dbz: {
     id: 'dbz',
@@ -37,6 +40,9 @@ export const PIECE_CLASSES: Record<string, PieceClass> = {
     kingIcon: '💫',
     description: 'Super Saiyans and powerful fighters',
     color: '#FF8C00',
+    manImage: require('../assets/pieces/dbz-pieces.png'),
+    kingImage: require('../assets/pieces/dbz-pieces.png'),
+    hasCustomImage: true,
   },
   sailormoon: {
     id: 'sailormoon',
@@ -46,6 +52,7 @@ export const PIECE_CLASSES: Record<string, PieceClass> = {
     kingIcon: '🌟',
     description: 'Magical guardians of love and justice',
     color: '#FF69B4',
+    hasCustomImage: false,
   },
 };
 
