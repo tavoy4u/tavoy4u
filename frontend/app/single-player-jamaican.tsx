@@ -326,6 +326,13 @@ class JamaicanCheckersAI {
 
 export default function JamaicanSinglePlayerScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const playerClass = (params.class as string) || 'jamaican';
+  const aiClass = 'european'; // AI always uses European class by default
+  
+  const playerPieceClass = getPieceClass(playerClass);
+  const aiPieceClass = getPieceClass(aiClass);
+  
   const [gameState, setGameState] = useState<GameState>({
     board: JamaicanCheckersAI.createInitialBoard(),
     turn: 'red',
