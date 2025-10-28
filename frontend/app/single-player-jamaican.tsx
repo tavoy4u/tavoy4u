@@ -678,9 +678,12 @@ export default function JamaicanSinglePlayerScreen() {
             piece.rank === 'king' && styles.kingPiece,
             isCapturing && styles.capturingPiece,
           ]}>
-            {piece.rank === 'king' && (
-              <Text style={styles.crownIcon}>👑</Text>
-            )}
+            <Text style={styles.pieceIcon}>
+              {piece.color === 'red' 
+                ? getPieceIcon(playerClass, piece.rank)
+                : getPieceIcon(aiClass, piece.rank)
+              }
+            </Text>
           </View>
         )}
       </TouchableOpacity>
