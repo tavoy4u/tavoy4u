@@ -947,6 +947,10 @@ const styles = StyleSheet.create({
   pieceIcon: {
     fontSize: SQUARE_SIZE * 0.5,
   },
+  pieceImage: {
+    width: '100%',
+    height: '100%',
+  },
   crownIcon: {
     fontSize: SQUARE_SIZE * 0.4,
   },
