@@ -185,7 +185,7 @@ class JamaicanCheckersAI {
       }
     }
     
-    // TEK MOVES (Captures) - ALL pieces can tek, kings can tek from distance
+    // TEK MOVES (Captures)
     for (const [dr, dc] of directions) {
       if (piece.rank === 'king') {
         // FLYING KINGS: Can tek from any distance and land anywhere beyond
@@ -198,7 +198,7 @@ class JamaicanCheckersAI {
           const capPiece = this.getPieceAt(state.board, { row: capRow, col: capCol });
           
           if (capPiece && capPiece.color !== piece.color) {
-            // Try landing squares beyond the captured piece
+            // FLYING KING: Can land anywhere beyond the captured piece
             for (let landDist = 1; landDist < 8; landDist++) {
               const landRow = capRow + dr * landDist;
               const landCol = capCol + dc * landDist;
@@ -224,7 +224,7 @@ class JamaicanCheckersAI {
           }
         }
       } else {
-        // MEN: Can tek in all directions (including backwards), jump only adjacent
+        // MEN: Can tek in all directions but land EXACTLY 2 squares away (immediately behind)
         const midRow = piece.square.row + dr;
         const midCol = piece.square.col + dc;
         const landRow = piece.square.row + 2 * dr;
@@ -234,6 +234,7 @@ class JamaicanCheckersAI {
           const midPiece = this.getPieceAt(state.board, { row: midRow, col: midCol });
           const landPiece = this.getPieceAt(state.board, { row: landRow, col: landCol });
           
+          // Must have opponent piece in middle and empty landing square
           if (midPiece && midPiece.color !== piece.color && !landPiece) {
             const promotes = (piece.color === 'red' && landRow === 0) || 
                            (piece.color === 'black' && landRow === 7);
