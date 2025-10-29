@@ -80,6 +80,8 @@ class GameState(BaseModel):
     black_player_name: Optional[str] = None
     mode: str = "american"  # "american" or "jamaican"
     capturing_piece: Optional[Square] = None  # For multi-capture chains
+    red_class: str = "european"  # Piece class for red player
+    black_class: str = "european"  # Piece class for black player
 
 class LeaderboardEntry(BaseModel):
     player_name: str
