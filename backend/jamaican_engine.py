@@ -202,6 +202,10 @@ class JamaicanCheckersEngine:
             winner=None,
             red_player=state.red_player,
             black_player=state.black_player,
+            red_player_name=state.red_player_name,
+            black_player_name=state.black_player_name,
+            red_class=state.red_class,
+            black_class=state.black_class,
             mode=state.mode
         )
         
