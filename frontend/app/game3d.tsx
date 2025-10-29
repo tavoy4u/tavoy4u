@@ -43,14 +43,16 @@ interface GameState {
   black_class: string;
 }
 
-// 3D Board Component
+// 3D Board Component with texture loading
 function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
   const SQUARE_SIZE = 1;
   const BOARD_OFFSET = -3.5;
   
-  // Load DBZ textures for black pieces
-  const dbzManTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-man.png'));
-  const dbzKingTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-king.png'));
+  // Load DBZ textures using useLoader hook
+  const [dbzManTexture, dbzKingTexture] = useLoader(THREE.TextureLoader, [
+    require('../assets/pieces/dbz-man.png'),
+    require('../assets/pieces/dbz-king.png'),
+  ]);
   
   return (
     <group>
@@ -110,12 +112,13 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
             </mesh>
             
             {/* DBZ Character Sprite for BLACK pieces */}
-            {isBlack && (
-              <sprite position={[0, 0.7, 0]} scale={[0.9, 0.9, 1]}>
+            {isBlack && dbzManTexture && dbzKingTexture && (
+              <sprite position={[0, 0.7, 0]} scale={[1.2, 1.2, 1]}>
                 <spriteMaterial 
                   map={isKing ? dbzKingTexture : dbzManTexture}
                   transparent={true}
                   opacity={1}
+                  sizeAttenuation={false}
                 />
               </sprite>
             )}
