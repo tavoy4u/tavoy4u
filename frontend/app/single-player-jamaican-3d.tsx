@@ -41,6 +41,10 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves, capturin
   const SQUARE_SIZE = 1;
   const BOARD_OFFSET = -3.5;
   
+  // Load textures for DBZ pieces
+  const dbzManTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-man.png'));
+  const dbzKingTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-king.png'));
+  
   return (
     <group>
       {/* Board Base */}
@@ -85,21 +89,41 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves, capturin
         const x = piece.square.col * SQUARE_SIZE + BOARD_OFFSET;
         const z = piece.square.row * SQUARE_SIZE + BOARD_OFFSET;
         const isKing = piece.rank === 'king';
+        const isRed = piece.color === 'red';
         
         return (
           <group key={piece.id} position={[x, 0.5, z]}>
-            {/* Piece body */}
+            {/* Piece body with image texture for red/DBZ pieces */}
             <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
               <cylinderGeometry args={[0.35, 0.35, isKing ? 0.3 : 0.2, 32]} />
-              <meshStandardMaterial 
-                color={piece.color === 'red' ? '#FF6B6B' : '#2C3E50'}
-                roughness={0.3}
-                metalness={0.7}
-              />
+              {isRed ? (
+                <meshStandardMaterial 
+                  map={isKing ? dbzKingTexture : dbzManTexture}
+                  roughness={0.3}
+                  metalness={0.7}
+                />
+              ) : (
+                <meshStandardMaterial 
+                  color='#2C3E50'
+                  roughness={0.3}
+                  metalness={0.7}
+                />
+              )}
             </mesh>
             
-            {/* King crown */}
-            {isKing && (
+            {/* Sprite billboard above piece showing character image */}
+            {isRed && (
+              <sprite position={[0, 0.6, 0]} scale={[0.8, 0.8, 1]}>
+                <spriteMaterial 
+                  map={isKing ? dbzKingTexture : dbzManTexture}
+                  transparent={true}
+                  opacity={1}
+                />
+              </sprite>
+            )}
+            
+            {/* King crown for non-red pieces */}
+            {isKing && !isRed && (
               <mesh position={[0, 0.25, 0]} castShadow>
                 <coneGeometry args={[0.2, 0.3, 8]} />
                 <meshStandardMaterial color="#FFD700" metalness={0.9} roughness={0.1} />
