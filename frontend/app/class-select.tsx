@@ -66,8 +66,8 @@ export default function ClassSelectScreen() {
         : `/single-player-${mode}?class=${selectedClass}`;
       router.push(gamePath);
     } else {
-      // For multiplayer, pass class to create/join game
-      router.push(`/mode-select?mode=${mode}&class=${selectedClass}`);
+      // For multiplayer, go directly to create-game or join-game
+      router.push(`/create-game?mode=${mode}&class=${selectedClass}`);
     }
   };
 
