@@ -126,7 +126,7 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "testing"
@@ -137,6 +137,9 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Need to retest with mode parameter (american/jamaican) to verify both game modes work correctly"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASS: Mode parameter testing completed successfully. Both American mode (POST /api/create-room?mode=american) and Jamaican mode (POST /api/create-room?mode=jamaican) create rooms correctly. Room codes: American=E529F9, Jamaican=0488DB. All endpoints responding properly."
 
   - task: "Get Room State API"
     implemented: true
