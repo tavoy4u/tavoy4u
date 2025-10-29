@@ -365,17 +365,19 @@ frontend:
         comment: "Need to update game.tsx to: 1) Accept and handle mode parameter (american/jamaican), 2) Use different game logic based on mode, 3) Render pieces based on selected class, 4) Support Jamaican-specific rules (Flying Kings, Backwards Tek, Hoof, Multi-Tek)"
 
 metadata:
-  created_by: "testing_agent"
-  version: "1.0"
-  test_sequence: 1
+  created_by: "main_agent"
+  version: "2.0"
+  test_sequence: 2
   run_ui: false
 
 test_plan:
   current_focus:
-    - "Create Room API"
-    - "Jamaican Mode Integration"
-    - "Piece Class Storage"
-    - "Multiplayer Game Screen - Mode Support"
+    - "Character Class Storage in GameState"
+    - "Create Room API with Class Support"
+    - "Join Room API with Class Support"
+    - "Character Selection Screen"
+    - "3D Character Models"
+    - "3D Game Board Dynamic Character Rendering"
   stuck_tasks: 
     - "WebSocket Connection"
   test_all: false
@@ -390,3 +392,5 @@ agent_communication:
     message: "Starting work on multiplayer implementation. Plan: 1) Verify backend APIs with mode parameter, 2) Update backend to support piece class storage, 3) Integrate Jamaican engine for mode=jamaican, 4) Update game.tsx for mode-specific logic and class-based rendering, 5) Test multiplayer flow with both modes"
   - agent: "testing"
     message: "Mode parameter testing completed successfully! ✅ All priority tests passed (6/6 = 100% success rate). Create Room API works correctly for both American and Jamaican modes. Get Room State API properly returns mode field in responses. WebSocket testing skipped as instructed due to infrastructure issues. Backend APIs are ready for multiplayer implementation."
+  - agent: "main"
+    message: "Implemented 4-class character selection system. Changes: 1) Added red_class/black_class to GameState, 2) Updated create-room/join-room APIs to accept class params, 3) Updated create-game/join-game to pass class selection, 4) Modified game3d.tsx to dynamically render characters based on gameState classes. Character-selection.tsx and CharacterModels.tsx already existed with all 4 classes (DBZ, Jamaican, European, Sailor Moon). Ready for backend testing."
