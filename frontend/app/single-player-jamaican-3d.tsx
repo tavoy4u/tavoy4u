@@ -479,13 +479,6 @@ export default function Jamaican3DGame() {
               playerClass={playerClass}
               aiClass={aiClass}
             />
-            
-            <OrbitControls
-              enablePan={false}
-              minDistance={8}
-              maxDistance={20}
-              maxPolarAngle={Math.PI / 2.2}
-            />
           </Suspense>
         </Canvas>
       </View>
