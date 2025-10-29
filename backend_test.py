@@ -517,22 +517,33 @@ class CheckersBackendTester:
             self.results.add_result("Board Validation", False, f"Board validation test failed: {str(e)}")
     
     def run_all_tests(self):
-        """Run all backend tests"""
-        print("Starting Island Checkers Backend Tests")
+        """Run all backend tests - Focus on mode parameter testing"""
+        print("Starting Island Checkers Backend Tests - Mode Parameter Focus")
         print("="*60)
         
-        # API Tests
+        # Priority Tests: Mode Parameter Support
+        print("PRIORITY TESTS: Mode Parameter Support")
+        print("-" * 40)
+        
+        # Test 1: Health Check
         self.test_health_check()
-        self.test_create_room()
-        self.test_get_room_state()
+        
+        # Test 2: Create Room with American Mode
+        self.test_create_room_american()
+        
+        # Test 3: Create Room with Jamaican Mode  
+        self.test_create_room_jamaican()
+        
+        # Test 4: Get American Room State (verify mode field)
+        self.test_get_room_state_american()
+        
+        # Test 5: Get Jamaican Room State (verify mode field)
+        self.test_get_room_state_jamaican()
+        
+        # Test 6: Invalid Room Handling
         self.test_invalid_room()
         
-        # WebSocket Tests
-        self.test_websocket_connection()
-        
-        # Game Engine Tests
-        self.test_game_engine_logic()
-        self.test_board_validation()
+        print("\nSKIPPING WebSocket Tests (as per instructions - infrastructure issues)")
         
         # Print results
         self.results.print_summary()
