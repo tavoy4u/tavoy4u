@@ -21,7 +21,7 @@ export default function CreateGameScreen() {
   const createRoom = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}`, {
+      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}&red_class=${playerClass}&black_class=${playerClass}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
