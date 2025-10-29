@@ -56,7 +56,9 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves, playerCl
   const renderPieceByClass = (piece: Piece, x: number, z: number) => {
     const isKing = piece.rank === 'king';
     const isRed = piece.color === 'red';
-    const pieceClass = isRed ? gameState.red_class : gameState.black_class;
+    const pieceClass = (isRed ? gameState.red_class : gameState.black_class) || 'jamaican';
+    
+    console.log(`Rendering ${isRed ? 'red' : 'black'} ${isKing ? 'king' : 'man'} with class: ${pieceClass}`);
     
     switch (pieceClass) {
       case 'dbz':
