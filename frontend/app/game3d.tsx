@@ -345,8 +345,8 @@ export default function Game3DScreen() {
     if (gameState?.winner && !winRecorded) {
       const recordWin = async () => {
         try {
-          const winnerName = gameState.winner === 'red' ? gameState.red_player_name : gameState.black_player_name;
-          const loserName = gameState.winner === 'red' ? gameState.black_player_name : gameState.red_player_name;
+          const winnerName = gameState.winner === 'red' ? gameState.red_player : gameState.black_player;
+          const loserName = gameState.winner === 'red' ? gameState.black_player : gameState.red_player;
           
           if (winnerName && loserName) {
             await fetch(`${BACKEND_URL}/api/record-win?winner_name=${encodeURIComponent(winnerName)}&loser_name=${encodeURIComponent(loserName)}`, {
