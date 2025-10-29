@@ -34,7 +34,7 @@ export default function ModeSelectScreen() {
           <View style={styles.buttonContainer}>
             <TouchableOpacity 
               style={[styles.button, styles.aiButton]}
-              onPress={() => router.push(`/class-select?mode=${mode}&type=single&is3d=true`)}
+              onPress={() => router.push(`/single-player-jamaican-3d?mode=${mode}`)}
             >
               <Text style={styles.buttonText}>🤖 Play vs Computer (3D)</Text>
             </TouchableOpacity>
