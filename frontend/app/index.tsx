@@ -1,13 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import SpaceBackground from '../components/SpaceBackground';
 
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <View style={styles.gradient}>
+      {/* Animated Space Background */}
+      <SpaceBackground />
+      
+      {/* Content overlay */}
+      <View style={styles.overlay}>
         <View style={styles.content}>
           {/* Title */}
           <View style={styles.titleContainer}>
