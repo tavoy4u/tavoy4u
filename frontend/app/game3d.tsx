@@ -277,11 +277,13 @@ export default function Game3DScreen() {
   const roomCode = params.room as string;
   const playerColor = params.color as PieceColor;
   const mode = (params.mode as string) || 'american';
+  const playerName = (params.playerName as string) || 'Player';
 
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [connected, setConnected] = useState(false);
+  const [winRecorded, setWinRecorded] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
