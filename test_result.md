@@ -126,7 +126,7 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "testing"
@@ -134,6 +134,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ PASS: Create Room API working correctly. Returns 6-character uppercase room codes. Multiple rooms created successfully (CDCE7E, B203AC, etc.)"
+      - working: "NA"
+        agent: "main"
+        comment: "Need to retest with mode parameter (american/jamaican) to verify both game modes work correctly"
 
   - task: "Get Room State API"
     implemented: true
