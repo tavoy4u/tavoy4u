@@ -1,8 +1,11 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
-# This module expects to be imported by server.py, which will provide the required classes
-# The classes are passed at runtime to avoid circular imports
+if TYPE_CHECKING:
+    from server import Piece, Square, Move, GameState, PieceColor, PieceRank
+    
+# At runtime, these will be injected from server.py
+Piece = Square = Move = GameState = PieceColor = PieceRank = None
 
 class JamaicanCheckersEngine:
     """Jamaican Checkers rules engine with multi-capture support"""
