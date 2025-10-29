@@ -41,13 +41,22 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* How to Play Button */}
-          <TouchableOpacity 
-            style={[styles.button, styles.tertiaryButton]}
-            onPress={() => router.push('/how-to-play')}
-          >
-            <Text style={styles.buttonTextDark}>📖 How to Play</Text>
-          </TouchableOpacity>
+          {/* Action Buttons */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity 
+              style={[styles.button, styles.tertiaryButton]}
+              onPress={() => router.push('/how-to-play')}
+            >
+              <Text style={styles.buttonTextDark}>📖 How to Play</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.button, styles.secondaryButton]}
+              onPress={() => router.push('/leaderboard')}
+            >
+              <Text style={styles.buttonText}>🏆 Leaderboard</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Footer */}
           <Text style={styles.footer}>Multiplayer • Cross-Platform • Real-time</Text>
