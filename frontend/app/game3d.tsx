@@ -124,7 +124,6 @@ export default function Game3DScreen() {
   const roomCode = params.room as string;
   const playerColor = params.color as PieceColor;
   const mode = (params.mode as string) || 'american';
-  const playerClass = (params.class as string) || 'jamaican';
 
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
