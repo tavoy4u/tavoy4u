@@ -204,12 +204,8 @@ export function EuropeanCharacter({ isKing = false, position = [0, 0, 0] }: any)
   const capeRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
-    if (groupRef.current) {
-      // Noble standing animation
-      groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime) * 0.03;
-    }
     if (capeRef.current && isKing) {
-      // Cape flowing
+      // Cape flowing only - stands firmly on board
       capeRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 2) * 0.1;
     }
   });
