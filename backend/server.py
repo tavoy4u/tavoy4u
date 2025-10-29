@@ -283,14 +283,22 @@ class CheckersEngine:
         # Switch turn
         new_turn = PieceColor.BLACK if state.turn == PieceColor.RED else PieceColor.RED
         
-        # Create new state
+        # Create new state - preserving all fields
         new_state = state.model_copy(deep=True)
         new_state.board = new_board
         new_state.turn = new_turn
         new_state.history = state.history + [move]
         
+        # Explicitly preserve player info and classes
+        new_state.red_player_name = state.red_player_name
+        new_state.black_player_name = state.black_player_name
+        new_state.red_class = state.red_class
+        new_state.black_class = state.black_class
+        
         # Check for winner
         new_state.winner = CheckersEngine.check_winner(new_state)
+        
+        logger.info(f"Move applied - Classes: red={new_state.red_class}, black={new_state.black_class}, Players: red={new_state.red_player_name}, black={new_state.black_player_name}")
         
         return new_state
     
