@@ -280,6 +280,66 @@ backend:
         comment: "✅ IMPLEMENTED: Added red_class and black_class fields to GameState model. Updated create-room API endpoint to accept red_class and black_class parameters. Updated ConnectionManager.create_room() to store piece classes. Frontend create-game.tsx updated to pass piece class parameters. Backend logs: 'Created {mode} room {code} with classes red={class}, black={class}'"
 
 frontend:
+  - task: "Character Selection Screen"
+    implemented: true
+    working: "NA"
+    file: "frontend/app/character-selection.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Character selection screen already exists with all 4 classes (DBZ, Jamaican, European, Sailor Moon) with 3D model previews"
+  
+  - task: "3D Character Models"
+    implemented: true
+    working: "NA"
+    file: "frontend/components/CharacterModels.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "All 4 character classes implemented with animated 3D models: DBZCharacter, JamaicanCharacter, EuropeanCharacter, SailorMoonCharacter. Each has man/king variants with unique animations"
+  
+  - task: "Create Game with Class Parameter"
+    implemented: true
+    working: "NA"
+    file: "frontend/app/create-game.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated create-game.tsx to pass selected class parameter to backend API via red_class query param"
+  
+  - task: "Join Game with Class Parameter"
+    implemented: true
+    working: "NA"
+    file: "frontend/app/join-game.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated join-game.tsx to pass selected class parameter to backend API via black_class query param"
+  
+  - task: "3D Game Board Dynamic Character Rendering"
+    implemented: true
+    working: "NA"
+    file: "frontend/app/game3d.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated game3d.tsx to dynamically render pieces based on gameState.red_class and gameState.black_class. Added renderCharacterPiece function to switch between 4 character types. Removed hardcoded DBZ pieces"
+  
   - task: "Frontend UI"
     implemented: false
     working: "NA"
