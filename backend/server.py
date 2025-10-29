@@ -76,8 +76,17 @@ class GameState(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     red_player: Optional[str] = None
     black_player: Optional[str] = None
+    red_player_name: Optional[str] = None  # Display name for red player
+    black_player_name: Optional[str] = None  # Display name for black player
     mode: str = "american"  # "american" or "jamaican"
     capturing_piece: Optional[Square] = None  # For multi-capture chains
+
+class LeaderboardEntry(BaseModel):
+    player_name: str
+    wins: int = 0
+    losses: int = 0
+    games_played: int = 0
+    last_played: datetime = Field(default_factory=datetime.utcnow)
 
 # Import Jamaican engine after model definitions to avoid circular import
 try:
