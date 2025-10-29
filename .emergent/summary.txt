@@ -1,0 +1,93 @@
+<analysis>
+The previous AI engineer initiated development of an Android Checkers game, quickly transitioning from the user's initial Kotlin/Jetpack Compose request to an Expo/React Native cross-platform app due to environment constraints. A server-based WebSocket approach was adopted for multiplayer, overcoming Bluetooth limitations. The core application structure was laid out with FastAPI for the backend and Expo Router for the frontend. Initial development focused on American Checkers, then expanded significantly to include a single-player AI mode and a detailed implementation of Jamaican Checkers rules, including Hoof and multi-capture mechanics. Recent efforts introduced a class selection system for game pieces (starting with DBZ), and transformed the board to a full 3D rendering using Three.js. The immediate preceding work involved debugging and fixing a critical multiplayer issue related to game room creation and parameter passing.
+</analysis>
+
+<product_requirements>
+The user initially requested a complete Android checkers game with Bluetooth multiplayer, using Kotlin and Jetpack Compose, targeting SDK 34 (minSDK 26+). Rules: American Checkers (8x8, dark squares, men diagonally forward, kings omnidirectional, forced/multi-jumps, win by elimination/blockade).
+Due to environment limitations, the app shifted to Expo/React Native for cross-platform (Android/iOS/Web) development. Bluetooth Classic was replaced by a **Server-Based WebSocket multiplayer** approach, supporting global play with room codes.
+Key game features implemented include:
+- **Game Modes**: American Checkers (single-player AI, multiplayer) and Jamaican Checkers (single-player AI, multiplayer).
+- **Jamaican Rules**: Flying Kings (kings move multiple squares), Backwards Tek (captures for men), Maximum Tek rule (must tek most pieces), Hoof rule (penalizing unmade teks, with two specific scenarios), and Multi-Tek Chains (forced continuous teks).
+- **Game Board**: Initially 2D, then isometric/angled 3D, and finally **full 3D rendering using Three.js**.
+- **Piece Design**: Custom game piece class selection (Jamaican, European, Dragon Ball Z, Sailor Moon) with placeholder 2D/3D sprites. The DBZ class has been integrated with specific images for men (Goku) and kings (Super Saiyan Goku).
+- **UI/UX**: Touch-friendly UI, game state persistence.
+- **Backend**: FastAPI with a MongoDB database, supporting WebSocket for real-time game state synchronization and room management, including different game modes (American/Jamaican) and class selection.
+</product_requirements>
+
+<key_technical_concepts>
+- **Frontend**: React Native, Expo, Jetpack Compose (initially requested, then changed to RN), Expo Router, , , , , .
+- **Backend**: FastAPI, WebSockets (), MongoDB, Uvicorn.
+- **Architecture**: MVVM, Use Cases, Modules (app, core:game, core:bluetooth, core:ui).
+- **Game Logic**: Pure Kotlin (initially, then Python for backend, JS/TS for frontend) game engine for American and Jamaican Checkers rules.
+</key_technical_concepts>
+
+<code_architecture>
+The application utilizes a monorepo structure with distinct frontend (Expo/React Native) and backend (FastAPI/Python) components.
+
+
+
+- ****:
+    - **Summary**: Main FastAPI application entry point. Handles API routes for game rooms, WebSocket connections for real-time multiplayer, and integrates the game engine logic.
+    - **Changes**: Updated significantly to include WebSocket management, game room creation, game state synchronization, and dynamic switching between American and Jamaican game engines based on selected mode. The  was extended to manage WebSocket connections per room and mode.
+- ****:
+    - **Summary**: New file containing the core game logic for Jamaican Checkers, including specific rules like Flying Kings, Backwards Tek, Max Tek, Hoof rule, and multi-capture sequences.
+    - **Changes**: Newly created to encapsulate the complex Jamaican rules, allowing for clean separation from the American rule set.
+- ****:
+    - **Summary**: The initial entry point and home screen of the Expo app.
+    - **Changes**: Modified to include navigation buttons for different game modes (Multiplayer, Play vs Computer, Mode Select), and styling adjustments. It was also modified to temporarily remove  usage for web compatibility.
+- ****:
+    - **Summary**: Screen for hosting a multiplayer game, generating a room code.
+    - **Changes**: Updated to accept game mode and piece class parameters from  and pass them to the backend when creating a game room. Also updated to pass these parameters to the subsequent game screen.
+- ****:
+    - **Summary**: Screen for joining an existing multiplayer game using a room code.
+    - **Changes**: Created early in the development for multiplayer functionality.
+- ****:
+    - **Summary**: The main game screen for American Checkers multiplayer.
+    - **Changes**: Created early for the core game display.
+- ****:
+    - **Summary**: Single-player game screen implementing American Checkers rules against an AI.
+    - **Changes**: Created to add AI functionality.
+- ****:
+    - **Summary**: Screen allowing users to choose between American and Jamaican game modes.
+    - **Changes**: Created to introduce game mode selection, updated to route to , and later updated to display rule summaries for each mode and link to the 3D version.
+- ****:
+    - **Summary**: Single-player game screen implementing Jamaican Checkers rules (2D board).
+    - **Changes**: Created as a derivative of , significantly modified to incorporate complex Jamaican rules (flying men/kings, backwards captures, hoof rule, multi-capture chains) and integrate piece class rendering.
+- ****:
+    - **Summary**: Screen where players choose their game piece design class.
+    - **Changes**: Newly created. Handles selection of classes like Jamaican, European, DBZ, and Sailor Moon. Routes to the appropriate game start screen (e.g.,  or ) with selected mode and class parameters.
+- ****:
+    - **Summary**: Single-player game screen implementing Jamaican Checkers rules with a full 3D board using Three.js.
+    - **Changes**: Newly created, replacing previous isometric 3D attempt. Implements Three.js for 3D rendering of the board and pieces, with basic camera controls. It has been updated to integrate DBZ characters as floating 2D sprites above the 3D pieces.
+- ****:
+    - **Summary**: Contains static assets like images for game pieces.
+    - **Changes**: New images like  and  were added for the DBZ piece class.
+- ****:
+    - **Summary**: Utility file defining the various game piece classes and their associated visual assets (icons/images).
+    - **Changes**: Newly created. Holds the logic for mapping piece ranks (man/king) to specific images for each class, including the DBZ man/king sprites.
+- ****:
+    - **Summary**: Expo configuration file.
+    - **Changes**: Minor updates related to  plugin (though it was later removed from code).
+- ****:
+    - **Summary**: Frontend dependencies.
+    - **Changes**: Added , , , , .
+</code_architecture>
+
+<pending_tasks>
+- Fully implement and test the multiplayer system, especially with the latest Jamaican rules and class selection, ensuring WebSocket synchronization.
+- Integrate the remaining game piece classes (Sailor Moon, European, Jamaican) with their respective 2D/3D assets.
+- Implement the client-side game logic for multiplayer () to properly handle the chosen game mode (American/Jamaican) and piece class.
+</pending_tasks>
+
+<current_work>
+The AI engineer was most recently working on fixing the multiplayer system, which was reported as not working with the specific issue Can not create game room. The problem was identified as incorrect routing and parameter passing between the  and  screens.
+
+Specifically, the  was modified to correctly route to  while passing the selected  (American/Jamaican) and / parameters. The  screen was then updated to accept these parameters and include them in the API call to the backend for room creation. Furthermore, the  function within  was updated to ensure these  and  parameters are correctly passed to the actual game screen ().
+
+The product's current state is that the backend API has been updated to support different game modes (American, Jamaican) and includes a comprehensive Jamaican game engine. The frontend has screens for home, mode selection, class selection, and single-player modes (both 2D American and 2D/3D Jamaican). Custom DBZ pieces are integrated into the 3D Jamaican single-player game. The issue is now about getting the multiplayer flow to properly initialize a game with the selected rules and piece classes.
+</current_work>
+
+<optional_next_step>
+Continue fixing the multiplayer system by checking the backend API and creating a working multiplayer game screen that utilizes the passed mode and class parameters.
+</optional_next_step>
+
