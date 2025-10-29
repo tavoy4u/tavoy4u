@@ -1,22 +1,28 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Tests for Island Checkers Game
-Tests API endpoints, WebSocket functionality, and game engine logic
+Backend API Testing for Character Class Selection System
+Tests the 4-class character selection system (European, Dragon Ball Z, Jamaican, Sailor Moon)
 """
 
 import requests
-import websocket
 import json
-import time
-import threading
-from typing import Dict, List, Optional
 import sys
-import os
+from typing import Dict, Any, List
 
-# Backend URL from environment
-BACKEND_URL = "https://checkers-3d.preview.emergentagent.com"
-API_BASE = f"{BACKEND_URL}/api"
-WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
+# Get backend URL from frontend .env
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('EXPO_PUBLIC_BACKEND_URL='):
+                    base_url = line.split('=', 1)[1].strip()
+                    return f"{base_url}/api"
+        return "http://localhost:8001/api"  # fallback
+    except:
+        return "http://localhost:8001/api"  # fallback
+
+BASE_URL = get_backend_url()
+print(f"Testing backend at: {BASE_URL}")
 
 class TestResults:
     def __init__(self):
