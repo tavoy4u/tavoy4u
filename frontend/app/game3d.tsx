@@ -159,12 +159,6 @@ export default function Game3DScreen() {
       const data = await response.json();
       
       if (!data.error) {
-        console.log('Game state loaded:', {
-          mode: data.mode,
-          red_class: data.red_class,
-          black_class: data.black_class,
-          pieces: data.board.length
-        });
         setGameState(data);
         setConnected(true);
       } else {
