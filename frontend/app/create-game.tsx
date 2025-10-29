@@ -52,7 +52,7 @@ export default function CreateGameScreen() {
   };
 
   const handleStartGame = () => {
-    router.push(`/game3d?room=${roomCode}&color=red&mode=${mode}`);
+    router.push(`/game3d?room=${roomCode}&color=red&mode=${mode}&playerName=${encodeURIComponent(playerName)}`);
   };
 
   if (loading) {
