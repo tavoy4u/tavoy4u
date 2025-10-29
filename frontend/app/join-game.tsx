@@ -9,6 +9,7 @@ export default function JoinGameScreen() {
   const params = useLocalSearchParams();
   const mode = (params.mode as string) || 'american';
   const playerName = (params.playerName as string) || 'Player';
+  const selectedClass = (params.class as string) || 'european';
   
   const [roomCode, setRoomCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,8 +23,8 @@ export default function JoinGameScreen() {
     setLoading(true);
     
     try {
-      // First, join the room with player name
-      const joinResponse = await fetch(`${BACKEND_URL}/api/join-room/${roomCode.trim().toUpperCase()}?player_name=${encodeURIComponent(playerName)}`, {
+      // First, join the room with player name and class
+      const joinResponse = await fetch(`${BACKEND_URL}/api/join-room/${roomCode.trim().toUpperCase()}?player_name=${encodeURIComponent(playerName)}&black_class=${selectedClass}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
