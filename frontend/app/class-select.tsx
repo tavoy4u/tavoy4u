@@ -46,6 +46,7 @@ export default function ClassSelectScreen() {
   const params = useLocalSearchParams();
   const mode = params.mode as string;
   const gameType = params.type as string; // 'single' or 'multi'
+  const is3d = params.is3d === 'true';
   
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
 
