@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, PanResponder } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei/native';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { getPieceIcon, getPieceClass } from '../utils/pieceClasses';
 
