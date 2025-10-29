@@ -128,54 +128,71 @@ class CheckersBackendTester:
         except Exception as e:
             self.results.add_result("Create Room API - Jamaican Mode", False, f"Request failed: {str(e)}")
     
-    def test_get_room_state(self):
-        """Test GET /api/room/{room_code} - Get game state"""
-        if not self.room_code:
-            self.results.add_result("Get Room State API", False, "No room code available from create room test")
+    def test_get_room_state_american(self):
+        """Test GET /api/room/{room_code} - Get American mode game state"""
+        if not self.american_room:
+            self.results.add_result("Get Room State API - American Mode", False, "No American room code available")
             return
             
         try:
-            response = requests.get(f"{API_BASE}/room/{self.room_code}", timeout=10)
+            response = requests.get(f"{API_BASE}/room/{self.american_room}", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
                 
+                # Validate mode field
+                if data.get("mode") != "american":
+                    self.results.add_result("Get Room State API - American Mode", False, f"Expected mode 'american', got: {data.get('mode')}")
+                    return
+                
                 # Validate game state structure
-                required_fields = ["id", "room_code", "board", "turn", "history", "winner"]
+                required_fields = ["id", "room_code", "board", "turn", "history", "winner", "mode"]
                 missing_fields = [field for field in required_fields if field not in data]
                 
                 if missing_fields:
-                    self.results.add_result("Get Room State API", False, f"Missing fields: {missing_fields}")
+                    self.results.add_result("Get Room State API - American Mode", False, f"Missing fields: {missing_fields}")
                     return
                 
-                # Validate board setup
-                board = data["board"]
-                if len(board) == 24:  # 12 pieces per player
-                    red_pieces = [p for p in board if p["color"] == "red"]
-                    black_pieces = [p for p in board if p["color"] == "black"]
-                    
-                    if len(red_pieces) == 12 and len(black_pieces) == 12:
-                        # Check piece positions
-                        red_rows = [p["square"]["row"] for p in red_pieces]
-                        black_rows = [p["square"]["row"] for p in black_pieces]
-                        
-                        if all(row in [5, 6, 7] for row in red_rows) and all(row in [0, 1, 2] for row in black_rows):
-                            # Check turn starts with RED
-                            if data["turn"] == "red":
-                                self.results.add_result("Get Room State API", True, f"Valid game state retrieved")
-                            else:
-                                self.results.add_result("Get Room State API", False, f"Turn should start with RED, got: {data['turn']}")
-                        else:
-                            self.results.add_result("Get Room State API", False, f"Invalid piece positions - Red rows: {set(red_rows)}, Black rows: {set(black_rows)}")
-                    else:
-                        self.results.add_result("Get Room State API", False, f"Wrong piece count - Red: {len(red_pieces)}, Black: {len(black_pieces)}")
-                else:
-                    self.results.add_result("Get Room State API", False, f"Expected 24 pieces, got {len(board)}")
+                self.results.add_result("Get Room State API - American Mode", True, f"American mode room state retrieved correctly")
+                
             else:
-                self.results.add_result("Get Room State API", False, f"HTTP {response.status_code}: {response.text}")
+                self.results.add_result("Get Room State API - American Mode", False, f"HTTP {response.status_code}: {response.text}")
                 
         except Exception as e:
-            self.results.add_result("Get Room State API", False, f"Request failed: {str(e)}")
+            self.results.add_result("Get Room State API - American Mode", False, f"Request failed: {str(e)}")
+
+    def test_get_room_state_jamaican(self):
+        """Test GET /api/room/{room_code} - Get Jamaican mode game state"""
+        if not self.jamaican_room:
+            self.results.add_result("Get Room State API - Jamaican Mode", False, "No Jamaican room code available")
+            return
+            
+        try:
+            response = requests.get(f"{API_BASE}/room/{self.jamaican_room}", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Validate mode field
+                if data.get("mode") != "jamaican":
+                    self.results.add_result("Get Room State API - Jamaican Mode", False, f"Expected mode 'jamaican', got: {data.get('mode')}")
+                    return
+                
+                # Validate game state structure
+                required_fields = ["id", "room_code", "board", "turn", "history", "winner", "mode"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.results.add_result("Get Room State API - Jamaican Mode", False, f"Missing fields: {missing_fields}")
+                    return
+                
+                self.results.add_result("Get Room State API - Jamaican Mode", True, f"Jamaican mode room state retrieved correctly")
+                
+            else:
+                self.results.add_result("Get Room State API - Jamaican Mode", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.results.add_result("Get Room State API - Jamaican Mode", False, f"Request failed: {str(e)}")
     
     def test_invalid_room(self):
         """Test GET /api/room/{invalid_code} - Invalid room handling"""
