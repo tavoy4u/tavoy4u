@@ -450,7 +450,10 @@ export default function Game3DScreen() {
       <View style={styles.canvasContainer}>
         <Canvas
           shadows
-          camera={{ position: [0, 10, 10], fov: 50 }}
+          camera={{ 
+            position: playerColor === 'black' ? [0, 10, -10] : [0, 10, 10], 
+            fov: 50 
+          }}
           gl={{ antialias: true }}
         >
           <Suspense fallback={null}>
