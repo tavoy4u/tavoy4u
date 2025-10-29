@@ -1,362 +1,402 @@
-diff --git a/frontend/app/join-game.tsx b/frontend/app/join-game.tsx
-index 027f6de..ef74632 100644
---- a/frontend/app/join-game.tsx
-+++ b/frontend/app/join-game.tsx
-@@ -8,6 +8,7 @@ export default function JoinGameScreen() {
-   const router = useRouter();
-   const params = useLocalSearchParams();
-   const mode = (params.mode as string) || 'american';
-+  const playerName = (params.playerName as string) || 'Player';
-   
-   const [roomCode, setRoomCode] = useState('');
-   const [loading, setLoading] = useState(false);
-@@ -21,14 +22,19 @@ export default function JoinGameScreen() {
-     setLoading(true);
-     
-     try {
--      const response = await fetch(`${BACKEND_URL}/api/room/${roomCode.trim().toUpperCase()}`);
--      const data = await response.json();
-+      // First, join the room with player name
-+      const joinResponse = await fetch(`${BACKEND_URL}/api/join-room/${roomCode.trim().toUpperCase()}?player_name=${encodeURIComponent(playerName)}`, {
-+        method: 'POST',
-+        headers: { 'Content-Type': 'application/json' }
-+      });
-       
--      if (data.error) {
-+      const joinData = await joinResponse.json();
+diff --git a/frontend/app/game3d.tsx b/frontend/app/game3d.tsx
+index cd76abf..2c06187 100644
+--- a/frontend/app/game3d.tsx
++++ b/frontend/app/game3d.tsx
+@@ -340,6 +340,30 @@ export default function Game3DScreen() {
+     }, 2000);
+   };
+ 
++  // Record win when game ends
++  useEffect(() => {
++    if (gameState?.winner && !winRecorded) {
++      const recordWin = async () => {
++        try {
++          const winnerName = gameState.winner === 'red' ? gameState.red_player : gameState.black_player;
++          const loserName = gameState.winner === 'red' ? gameState.black_player : gameState.red_player;
++          
++          if (winnerName && loserName) {
++            await fetch(`${BACKEND_URL}/api/record-win?winner_name=${encodeURIComponent(winnerName)}&loser_name=${encodeURIComponent(loserName)}`, {
++              method: 'POST',
++            });
++            setWinRecorded(true);
++            console.log(`Win recorded: ${winnerName} beat ${loserName}`);
++          }
++        } catch (err) {
++          console.error('Error recording win:', err);
++        }
++      };
 +      
-+      if (joinData.error) {
-         Alert.alert('Error', 'Room not found. Please check the code.');
-       } else {
--        // Join as black player
--        router.push(`/game3d?room=${roomCode.trim().toUpperCase()}&color=black&mode=${data.mode || mode}`);
-+        // Navigate to game with player name
-+        router.push(`/game3d?room=${roomCode.trim().toUpperCase()}&color=black&mode=${joinData.game_state.mode || mode}&playerName=${encodeURIComponent(playerName)}`);
-       }
-     } catch (err) {
-       Alert.alert('Error', 'Failed to join room. Please try again.');
++      recordWin();
++    }
++  }, [gameState?.winner, winRecorded]);
++
+   const stopPolling = () => {
+     if (pollingIntervalRef.current) {
+       clearInterval(pollingIntervalRef.current);
 diff --git a/model.patch b/model.patch
-index 1c246d3..e69de29 100644
+index 24fc150..e69de29 100644
 --- a/model.patch
 +++ b/model.patch
-@@ -1,320 +0,0 @@
+@@ -1,362 +0,0 @@
+-diff --git a/frontend/app/join-game.tsx b/frontend/app/join-game.tsx
+-index 027f6de..ef74632 100644
+---- a/frontend/app/join-game.tsx
+-+++ b/frontend/app/join-game.tsx
+-@@ -8,6 +8,7 @@ export default function JoinGameScreen() {
+-   const router = useRouter();
+-   const params = useLocalSearchParams();
+-   const mode = (params.mode as string) || 'american';
+-+  const playerName = (params.playerName as string) || 'Player';
+-   
+-   const [roomCode, setRoomCode] = useState('');
+-   const [loading, setLoading] = useState(false);
+-@@ -21,14 +22,19 @@ export default function JoinGameScreen() {
+-     setLoading(true);
+-     
+-     try {
+--      const response = await fetch(`${BACKEND_URL}/api/room/${roomCode.trim().toUpperCase()}`);
+--      const data = await response.json();
+-+      // First, join the room with player name
+-+      const joinResponse = await fetch(`${BACKEND_URL}/api/join-room/${roomCode.trim().toUpperCase()}?player_name=${encodeURIComponent(playerName)}`, {
+-+        method: 'POST',
+-+        headers: { 'Content-Type': 'application/json' }
+-+      });
+-       
+--      if (data.error) {
+-+      const joinData = await joinResponse.json();
+-+      
+-+      if (joinData.error) {
+-         Alert.alert('Error', 'Room not found. Please check the code.');
+-       } else {
+--        // Join as black player
+--        router.push(`/game3d?room=${roomCode.trim().toUpperCase()}&color=black&mode=${data.mode || mode}`);
+-+        // Navigate to game with player name
+-+        router.push(`/game3d?room=${roomCode.trim().toUpperCase()}&color=black&mode=${joinData.game_state.mode || mode}&playerName=${encodeURIComponent(playerName)}`);
+-       }
+-     } catch (err) {
+-       Alert.alert('Error', 'Failed to join room. Please try again.');
 -diff --git a/model.patch b/model.patch
--index 0aa4b1f..e69de29 100644
+-index 1c246d3..e69de29 100644
 ---- a/model.patch
 -+++ b/model.patch
--@@ -1,315 +0,0 @@
---diff --git a/frontend/app/index.tsx b/frontend/app/index.tsx
---index a917bcc..48bd50c 100644
------ a/frontend/app/index.tsx
---+++ b/frontend/app/index.tsx
---@@ -74,6 +74,7 @@ export default function HomeScreen() {
--- const styles = StyleSheet.create({
---   container: {
---     flex: 1,
---+    backgroundColor: '#0a0a1e',
---   },
---   gradient: {
---     flex: 1,
---@@ -81,13 +82,14 @@ const styles = StyleSheet.create({
---   },
---   overlay: {
---     flex: 1,
----    backgroundColor: 'rgba(0, 0, 0, 0.3)',
---+    backgroundColor: 'rgba(10, 10, 30, 0.5)',
---+    justifyContent: 'center',
---+    alignItems: 'center',
---   },
---   content: {
----    flex: 1,
----    justifyContent: 'center',
---     alignItems: 'center',
----    padding: 24,
---+    padding: 20,
---+    zIndex: 1,
---   },
---   titleContainer: {
---     alignItems: 'center',
+-@@ -1,320 +0,0 @@
 --diff --git a/model.patch b/model.patch
---index 60582c4..e69de29 100644
+--index 0aa4b1f..e69de29 100644
 ----- a/model.patch
 --+++ b/model.patch
---@@ -1,279 +0,0 @@
+--@@ -1,315 +0,0 @@
 ---diff --git a/frontend/app/index.tsx b/frontend/app/index.tsx
----index d2b7723..a917bcc 100644
+---index a917bcc..48bd50c 100644
 ------ a/frontend/app/index.tsx
 ---+++ b/frontend/app/index.tsx
----@@ -79,6 +79,10 @@ const styles = StyleSheet.create({
+---@@ -74,6 +74,7 @@ export default function HomeScreen() {
+--- const styles = StyleSheet.create({
+---   container: {
 ---     flex: 1,
----     backgroundColor: '#45B7D1',
+---+    backgroundColor: '#0a0a1e',
 ---   },
----+  overlay: {
----+    flex: 1,
----+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
----+  },
----   content: {
+---   gradient: {
 ---     flex: 1,
----     justifyContent: 'center',
+---@@ -81,13 +82,14 @@ const styles = StyleSheet.create({
+---   },
+---   overlay: {
+---     flex: 1,
+----    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+---+    backgroundColor: 'rgba(10, 10, 30, 0.5)',
+---+    justifyContent: 'center',
+---+    alignItems: 'center',
+---   },
+---   content: {
+----    flex: 1,
+----    justifyContent: 'center',
+---     alignItems: 'center',
+----    padding: 24,
+---+    padding: 20,
+---+    zIndex: 1,
+---   },
+---   titleContainer: {
+---     alignItems: 'center',
 ---diff --git a/model.patch b/model.patch
----index 1ebcb80..e69de29 100644
+---index 60582c4..e69de29 100644
 ------ a/model.patch
 ---+++ b/model.patch
----@@ -1,259 +0,0 @@
+---@@ -1,279 +0,0 @@
 ----diff --git a/frontend/app/index.tsx b/frontend/app/index.tsx
-----index 5c0a9f4..af3ed4e 100644
+----index d2b7723..a917bcc 100644
 ------- a/frontend/app/index.tsx
 ----+++ b/frontend/app/index.tsx
-----@@ -41,13 +41,22 @@ export default function HomeScreen() {
-----             </View>
-----           </View>
----- 
------          {/* How to Play Button */}
------          <TouchableOpacity 
------            style={[styles.button, styles.tertiaryButton]}
------            onPress={() => router.push('/how-to-play')}
------          >
------            <Text style={styles.buttonTextDark}>📖 How to Play</Text>
------          </TouchableOpacity>
-----+          {/* Action Buttons */}
-----+          <View style={styles.buttonContainer}>
-----+            <TouchableOpacity 
-----+              style={[styles.button, styles.tertiaryButton]}
-----+              onPress={() => router.push('/how-to-play')}
-----+            >
-----+              <Text style={styles.buttonTextDark}>📖 How to Play</Text>
-----+            </TouchableOpacity>
-----+
-----+            <TouchableOpacity 
-----+              style={[styles.button, styles.secondaryButton]}
-----+              onPress={() => router.push('/leaderboard')}
-----+            >
-----+              <Text style={styles.buttonText}>🏆 Leaderboard</Text>
-----+            </TouchableOpacity>
-----+          </View>
----- 
-----           {/* Footer */}
-----           <Text style={styles.footer}>Multiplayer • Cross-Platform • Real-time</Text>
+----@@ -79,6 +79,10 @@ const styles = StyleSheet.create({
+----     flex: 1,
+----     backgroundColor: '#45B7D1',
+----   },
+----+  overlay: {
+----+    flex: 1,
+----+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+----+  },
+----   content: {
+----     flex: 1,
+----     justifyContent: 'center',
 ----diff --git a/model.patch b/model.patch
-----index 7baa7df..e69de29 100644
+----index 1ebcb80..e69de29 100644
 ------- a/model.patch
 ----+++ b/model.patch
-----@@ -1,220 +0,0 @@
------diff --git a/frontend/app/create-game.tsx b/frontend/app/create-game.tsx
------index a088729..650e1bf 100644
--------- a/frontend/app/create-game.tsx
------+++ b/frontend/app/create-game.tsx
------@@ -8,6 +8,7 @@ export default function CreateGameScreen() {
------   const router = useRouter();
------   const params = useLocalSearchParams();
------   const mode = (params.mode as string) || 'american';
------+  const playerName = (params.playerName as string) || 'Player';
------   
------   const [loading, setLoading] = useState(true);
------   const [roomCode, setRoomCode] = useState('');
------@@ -20,7 +21,7 @@ export default function CreateGameScreen() {
------   const createRoom = async () => {
------     try {
------       setLoading(true);
-------      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}`, {
------+      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}&player_name=${encodeURIComponent(playerName)}`, {
------         method: 'POST',
------         headers: { 'Content-Type': 'application/json' }
------       });
+----@@ -1,259 +0,0 @@
+-----diff --git a/frontend/app/index.tsx b/frontend/app/index.tsx
+-----index 5c0a9f4..af3ed4e 100644
+-------- a/frontend/app/index.tsx
+-----+++ b/frontend/app/index.tsx
+-----@@ -41,13 +41,22 @@ export default function HomeScreen() {
+-----             </View>
+-----           </View>
+----- 
+------          {/* How to Play Button */}
+------          <TouchableOpacity 
+------            style={[styles.button, styles.tertiaryButton]}
+------            onPress={() => router.push('/how-to-play')}
+------          >
+------            <Text style={styles.buttonTextDark}>📖 How to Play</Text>
+------          </TouchableOpacity>
+-----+          {/* Action Buttons */}
+-----+          <View style={styles.buttonContainer}>
+-----+            <TouchableOpacity 
+-----+              style={[styles.button, styles.tertiaryButton]}
+-----+              onPress={() => router.push('/how-to-play')}
+-----+            >
+-----+              <Text style={styles.buttonTextDark}>📖 How to Play</Text>
+-----+            </TouchableOpacity>
+-----+
+-----+            <TouchableOpacity 
+-----+              style={[styles.button, styles.secondaryButton]}
+-----+              onPress={() => router.push('/leaderboard')}
+-----+            >
+-----+              <Text style={styles.buttonText}>🏆 Leaderboard</Text>
+-----+            </TouchableOpacity>
+-----+          </View>
+----- 
+-----           {/* Footer */}
+-----           <Text style={styles.footer}>Multiplayer • Cross-Platform • Real-time</Text>
 -----diff --git a/model.patch b/model.patch
------index f40d35d..e69de29 100644
+-----index 7baa7df..e69de29 100644
 -------- a/model.patch
 -----+++ b/model.patch
------@@ -1,194 +0,0 @@
+-----@@ -1,220 +0,0 @@
+------diff --git a/frontend/app/create-game.tsx b/frontend/app/create-game.tsx
+------index a088729..650e1bf 100644
+--------- a/frontend/app/create-game.tsx
+------+++ b/frontend/app/create-game.tsx
+------@@ -8,6 +8,7 @@ export default function CreateGameScreen() {
+------   const router = useRouter();
+------   const params = useLocalSearchParams();
+------   const mode = (params.mode as string) || 'american';
+------+  const playerName = (params.playerName as string) || 'Player';
+------   
+------   const [loading, setLoading] = useState(true);
+------   const [roomCode, setRoomCode] = useState('');
+------@@ -20,7 +21,7 @@ export default function CreateGameScreen() {
+------   const createRoom = async () => {
+------     try {
+------       setLoading(true);
+-------      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}`, {
+------+      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}&player_name=${encodeURIComponent(playerName)}`, {
+------         method: 'POST',
+------         headers: { 'Content-Type': 'application/json' }
+------       });
 ------diff --git a/model.patch b/model.patch
-------index dda42ce..e69de29 100644
+------index f40d35d..e69de29 100644
 --------- a/model.patch
 ------+++ b/model.patch
-------@@ -1,146 +0,0 @@
+------@@ -1,194 +0,0 @@
+-------diff --git a/model.patch b/model.patch
+-------index dda42ce..e69de29 100644
+---------- a/model.patch
+-------+++ b/model.patch
+-------@@ -1,146 +0,0 @@
+--------diff --git a/test_result.md b/test_result.md
+--------index 187cba4..cb0cbd8 100644
+----------- a/test_result.md
+--------+++ b/test_result.md
+--------@@ -100,4 +100,138 @@
+-------- 
+-------- #====================================================================================================
+-------- # Testing Data - Main Agent and testing sub agent both should log testing data below this section
+---------#====================================================================================================
+--------\ No newline at end of file
+--------+#====================================================================================================
+--------+
+--------+user_problem_statement: "Test the Island Checkers Game backend API endpoints and WebSocket functionality"
+--------+
+--------+backend:
+--------+  - task: "Health Check API"
+--------+    implemented: true
+--------+    working: true
+--------+    file: "backend/server.py"
+--------+    stuck_count: 0
+--------+    priority: "high"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: "NA"
+--------+        agent: "testing"
+--------+        comment: "Initial testing - GET /api/ endpoint"
+--------+      - working: true
+--------+        agent: "testing"
+--------+        comment: "✅ PASS: Health Check API returns correct message 'Tropical Island Checkers API'. Endpoint responding properly at /api/"
+--------+
+--------+  - task: "Create Room API"
+--------+    implemented: true
+--------+    working: true
+--------+    file: "backend/server.py"
+--------+    stuck_count: 0
+--------+    priority: "high"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: "NA"
+--------+        agent: "testing"
+--------+        comment: "Initial testing - POST /api/create-room endpoint"
+--------+      - working: true
+--------+        agent: "testing"
+--------+        comment: "✅ PASS: Create Room API working correctly. Returns 6-character uppercase room codes. Multiple rooms created successfully (CDCE7E, B203AC, etc.)"
+--------+
+--------+  - task: "Get Room State API"
+--------+    implemented: true
+--------+    working: true
+--------+    file: "backend/server.py"
+--------+    stuck_count: 0
+--------+    priority: "high"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: "NA"
+--------+        agent: "testing"
+--------+        comment: "Initial testing - GET /api/room/{room_code} endpoint"
+--------+      - working: true
+--------+        agent: "testing"
+--------+        comment: "✅ PASS: Get Room State API working correctly. Returns complete game state with all required fields (id, room_code, board, turn, history, winner, created_at). Validates room existence and returns proper error for invalid rooms."
+--------+
+--------+  - task: "WebSocket Connection"
+--------+    implemented: true
+--------+    working: false
+--------+    file: "backend/server.py"
+--------+    stuck_count: 1
+--------+    priority: "high"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: "NA"
+--------+        agent: "testing"
+--------+        comment: "Initial testing - WebSocket connection and messaging"
+--------+      - working: false
+--------+        agent: "testing"
+--------+        comment: "❌ FAIL: WebSocket connection fails with 502 Bad Gateway. This is an infrastructure issue - Kubernetes ingress not configured for WebSocket upgrades. The WebSocket code in server.py appears correct but requires proper ingress annotations for proxy_set_header Upgrade and Connection upgrade headers."
+--------+
+--------+  - task: "Game Engine Logic"
+--------+    implemented: true
+--------+    working: true
+--------+    file: "backend/server.py"
+--------+    stuck_count: 0
+--------+    priority: "high"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: "NA"
+--------+        agent: "testing"
+--------+        comment: "Initial testing - Board setup, moves, captures, king promotion"
+--------+      - working: true
+--------+        agent: "testing"
+--------+        comment: "✅ PASS: Game Engine Logic comprehensive testing passed. Initial board setup correct (12 pieces per player, red on rows 5-7, black on rows 0-2, pieces only on dark squares, turn starts with RED, all pieces initially MAN rank). Game state structure validated. Board position validation passed."
+--------+
+--------+  - task: "Invalid Room Handling"
+--------+    implemented: true
+--------+    working: true
+--------+    file: "backend/server.py"
+--------+    stuck_count: 0
+--------+    priority: "medium"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: true
+--------+        agent: "testing"
+--------+        comment: "✅ PASS: Invalid room handling working correctly. Returns proper error message 'Room not found' for non-existent room codes."
+--------+
+--------+  - task: "Board Validation Logic"
+--------+    implemented: true
+--------+    working: true
+--------+    file: "backend/server.py"
+--------+    stuck_count: 0
+--------+    priority: "medium"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: true
+--------+        agent: "testing"
+--------+        comment: "✅ PASS: Board validation logic working correctly. Pieces correctly placed only on dark squares, middle rows (3,4) empty as expected, proper piece positioning validated."
+--------+
+--------+frontend:
+--------+  - task: "Frontend UI"
+--------+    implemented: false
+--------+    working: "NA"
+--------+    file: "frontend/src/App.js"
+--------+    stuck_count: 0
+--------+    priority: "low"
+--------+    needs_retesting: false
+--------+    status_history:
+--------+      - working: "NA"
+--------+        agent: "testing"
+--------+        comment: "Not testing frontend as per instructions"
+--------+
+--------+metadata:
+--------+  created_by: "testing_agent"
+--------+  version: "1.0"
+--------+  test_sequence: 1
+--------+  run_ui: false
+--------+
+--------+test_plan:
+--------+  current_focus: []
+--------+  stuck_tasks: 
+--------+    - "WebSocket Connection"
+--------+  test_all: false
+--------+  test_priority: "high_first"
+--------+
+--------+agent_communication:
+--------+  - agent: "testing"
+--------+    message: "Starting comprehensive backend testing for Island Checkers Game API endpoints and WebSocket functionality"
+--------+  - agent: "testing"
+--------+    message: "Backend testing completed. 8/9 tests passed (88.9% success rate). All API endpoints working correctly. Game engine logic fully validated. Only WebSocket connection failing due to Kubernetes ingress configuration issue (502 Bad Gateway) - requires infrastructure fix, not code fix."
+--------\ No newline at end of file
 -------diff --git a/test_result.md b/test_result.md
--------index 187cba4..cb0cbd8 100644
+-------index 08232ad..5e67bb1 100644
 ---------- a/test_result.md
 -------+++ b/test_result.md
--------@@ -100,4 +100,138 @@
+-------@@ -126,7 +126,7 @@ backend:
+-------     file: "backend/server.py"
+-------     stuck_count: 0
+-------     priority: "high"
+--------    needs_retesting: true
+-------+    needs_retesting: false
+-------     status_history:
+-------       - working: "NA"
+-------         agent: "testing"
+-------@@ -137,6 +137,9 @@ backend:
+-------       - working: "NA"
+-------         agent: "main"
+-------         comment: "Need to retest with mode parameter (american/jamaican) to verify both game modes work correctly"
+-------+      - working: true
+-------+        agent: "testing"
+-------+        comment: "✅ PASS: Mode parameter testing completed successfully. Both American mode (POST /api/create-room?mode=american) and Jamaican mode (POST /api/create-room?mode=jamaican) create rooms correctly. Room codes: American=E529F9, Jamaican=0488DB. All endpoints responding properly."
 ------- 
-------- #====================================================================================================
-------- # Testing Data - Main Agent and testing sub agent both should log testing data below this section
---------#====================================================================================================
+-------   - task: "Get Room State API"
+-------     implemented: true
+-------@@ -152,6 +155,9 @@ backend:
+-------       - working: true
+-------         agent: "testing"
+-------         comment: "✅ PASS: Get Room State API working correctly. Returns complete game state with all required fields (id, room_code, board, turn, history, winner, created_at). Validates room existence and returns proper error for invalid rooms."
+-------+      - working: true
+-------+        agent: "testing"
+-------+        comment: "✅ PASS: Mode field verification completed. Both American and Jamaican room states correctly return mode field in response. American room (E529F9) returns mode='american', Jamaican room (0488DB) returns mode='jamaican'. All required fields present including mode parameter."
+------- 
+-------   - task: "WebSocket Connection"
+-------     implemented: true
+-------@@ -279,4 +285,6 @@ agent_communication:
+-------   - agent: "testing"
+-------     message: "Backend testing completed. 8/9 tests passed (88.9% success rate). All API endpoints working correctly. Game engine logic fully validated. Only WebSocket connection failing due to Kubernetes ingress configuration issue (502 Bad Gateway) - requires infrastructure fix, not code fix."
+-------   - agent: "main"
+--------    message: "Starting work on multiplayer implementation. Plan: 1) Verify backend APIs with mode parameter, 2) Update backend to support piece class storage, 3) Integrate Jamaican engine for mode=jamaican, 4) Update game.tsx for mode-specific logic and class-based rendering, 5) Test multiplayer flow with both modes"
 -------\ No newline at end of file
--------+#====================================================================================================
--------+
--------+user_problem_statement: "Test the Island Checkers Game backend API endpoints and WebSocket functionality"
--------+
--------+backend:
--------+  - task: "Health Check API"
--------+    implemented: true
--------+    working: true
--------+    file: "backend/server.py"
--------+    stuck_count: 0
--------+    priority: "high"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: "NA"
--------+        agent: "testing"
--------+        comment: "Initial testing - GET /api/ endpoint"
--------+      - working: true
--------+        agent: "testing"
--------+        comment: "✅ PASS: Health Check API returns correct message 'Tropical Island Checkers API'. Endpoint responding properly at /api/"
--------+
--------+  - task: "Create Room API"
--------+    implemented: true
--------+    working: true
--------+    file: "backend/server.py"
--------+    stuck_count: 0
--------+    priority: "high"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: "NA"
--------+        agent: "testing"
--------+        comment: "Initial testing - POST /api/create-room endpoint"
--------+      - working: true
--------+        agent: "testing"
--------+        comment: "✅ PASS: Create Room API working correctly. Returns 6-character uppercase room codes. Multiple rooms created successfully (CDCE7E, B203AC, etc.)"
--------+
--------+  - task: "Get Room State API"
--------+    implemented: true
--------+    working: true
--------+    file: "backend/server.py"
--------+    stuck_count: 0
--------+    priority: "high"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: "NA"
--------+        agent: "testing"
--------+        comment: "Initial testing - GET /api/room/{room_code} endpoint"
--------+      - working: true
--------+        agent: "testing"
--------+        comment: "✅ PASS: Get Room State API working correctly. Returns complete game state with all required fields (id, room_code, board, turn, history, winner, created_at). Validates room existence and returns proper error for invalid rooms."
--------+
--------+  - task: "WebSocket Connection"
--------+    implemented: true
--------+    working: false
--------+    file: "backend/server.py"
--------+    stuck_count: 1
--------+    priority: "high"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: "NA"
--------+        agent: "testing"
--------+        comment: "Initial testing - WebSocket connection and messaging"
--------+      - working: false
--------+        agent: "testing"
--------+        comment: "❌ FAIL: WebSocket connection fails with 502 Bad Gateway. This is an infrastructure issue - Kubernetes ingress not configured for WebSocket upgrades. The WebSocket code in server.py appears correct but requires proper ingress annotations for proxy_set_header Upgrade and Connection upgrade headers."
--------+
--------+  - task: "Game Engine Logic"
--------+    implemented: true
--------+    working: true
--------+    file: "backend/server.py"
--------+    stuck_count: 0
--------+    priority: "high"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: "NA"
--------+        agent: "testing"
--------+        comment: "Initial testing - Board setup, moves, captures, king promotion"
--------+      - working: true
--------+        agent: "testing"
--------+        comment: "✅ PASS: Game Engine Logic comprehensive testing passed. Initial board setup correct (12 pieces per player, red on rows 5-7, black on rows 0-2, pieces only on dark squares, turn starts with RED, all pieces initially MAN rank). Game state structure validated. Board position validation passed."
--------+
--------+  - task: "Invalid Room Handling"
--------+    implemented: true
--------+    working: true
--------+    file: "backend/server.py"
--------+    stuck_count: 0
--------+    priority: "medium"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: true
--------+        agent: "testing"
--------+        comment: "✅ PASS: Invalid room handling working correctly. Returns proper error message 'Room not found' for non-existent room codes."
--------+
--------+  - task: "Board Validation Logic"
--------+    implemented: true
--------+    working: true
--------+    file: "backend/server.py"
--------+    stuck_count: 0
--------+    priority: "medium"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: true
--------+        agent: "testing"
--------+        comment: "✅ PASS: Board validation logic working correctly. Pieces correctly placed only on dark squares, middle rows (3,4) empty as expected, proper piece positioning validated."
--------+
--------+frontend:
--------+  - task: "Frontend UI"
--------+    implemented: false
--------+    working: "NA"
--------+    file: "frontend/src/App.js"
--------+    stuck_count: 0
--------+    priority: "low"
--------+    needs_retesting: false
--------+    status_history:
--------+      - working: "NA"
--------+        agent: "testing"
--------+        comment: "Not testing frontend as per instructions"
--------+
--------+metadata:
--------+  created_by: "testing_agent"
--------+  version: "1.0"
--------+  test_sequence: 1
--------+  run_ui: false
--------+
--------+test_plan:
--------+  current_focus: []
--------+  stuck_tasks: 
--------+    - "WebSocket Connection"
--------+  test_all: false
--------+  test_priority: "high_first"
--------+
--------+agent_communication:
+-------+    message: "Starting work on multiplayer implementation. Plan: 1) Verify backend APIs with mode parameter, 2) Update backend to support piece class storage, 3) Integrate Jamaican engine for mode=jamaican, 4) Update game.tsx for mode-specific logic and class-based rendering, 5) Test multiplayer flow with both modes"
 -------+  - agent: "testing"
--------+    message: "Starting comprehensive backend testing for Island Checkers Game API endpoints and WebSocket functionality"
--------+  - agent: "testing"
--------+    message: "Backend testing completed. 8/9 tests passed (88.9% success rate). All API endpoints working correctly. Game engine logic fully validated. Only WebSocket connection failing due to Kubernetes ingress configuration issue (502 Bad Gateway) - requires infrastructure fix, not code fix."
+-------+    message: "Mode parameter testing completed successfully! ✅ All priority tests passed (6/6 = 100% success rate). Create Room API works correctly for both American and Jamaican modes. Get Room State API properly returns mode field in responses. WebSocket testing skipped as instructed due to infrastructure issues. Backend APIs are ready for multiplayer implementation."
 -------\ No newline at end of file
-------diff --git a/test_result.md b/test_result.md
-------index 08232ad..5e67bb1 100644
---------- a/test_result.md
-------+++ b/test_result.md
-------@@ -126,7 +126,7 @@ backend:
-------     file: "backend/server.py"
-------     stuck_count: 0
-------     priority: "high"
--------    needs_retesting: true
-------+    needs_retesting: false
-------     status_history:
-------       - working: "NA"
-------         agent: "testing"
-------@@ -137,6 +137,9 @@ backend:
-------       - working: "NA"
-------         agent: "main"
-------         comment: "Need to retest with mode parameter (american/jamaican) to verify both game modes work correctly"
-------+      - working: true
-------+        agent: "testing"
-------+        comment: "✅ PASS: Mode parameter testing completed successfully. Both American mode (POST /api/create-room?mode=american) and Jamaican mode (POST /api/create-room?mode=jamaican) create rooms correctly. Room codes: American=E529F9, Jamaican=0488DB. All endpoints responding properly."
------- 
-------   - task: "Get Room State API"
-------     implemented: true
-------@@ -152,6 +155,9 @@ backend:
-------       - working: true
-------         agent: "testing"
-------         comment: "✅ PASS: Get Room State API working correctly. Returns complete game state with all required fields (id, room_code, board, turn, history, winner, created_at). Validates room existence and returns proper error for invalid rooms."
-------+      - working: true
-------+        agent: "testing"
-------+        comment: "✅ PASS: Mode field verification completed. Both American and Jamaican room states correctly return mode field in response. American room (E529F9) returns mode='american', Jamaican room (0488DB) returns mode='jamaican'. All required fields present including mode parameter."
------- 
-------   - task: "WebSocket Connection"
-------     implemented: true
-------@@ -279,4 +285,6 @@ agent_communication:
-------   - agent: "testing"
-------     message: "Backend testing completed. 8/9 tests passed (88.9% success rate). All API endpoints working correctly. Game engine logic fully validated. Only WebSocket connection failing due to Kubernetes ingress configuration issue (502 Bad Gateway) - requires infrastructure fix, not code fix."
-------   - agent: "main"
--------    message: "Starting work on multiplayer implementation. Plan: 1) Verify backend APIs with mode parameter, 2) Update backend to support piece class storage, 3) Integrate Jamaican engine for mode=jamaican, 4) Update game.tsx for mode-specific logic and class-based rendering, 5) Test multiplayer flow with both modes"
-------\ No newline at end of file
-------+    message: "Starting work on multiplayer implementation. Plan: 1) Verify backend APIs with mode parameter, 2) Update backend to support piece class storage, 3) Integrate Jamaican engine for mode=jamaican, 4) Update game.tsx for mode-specific logic and class-based rendering, 5) Test multiplayer flow with both modes"
-------+  - agent: "testing"
-------+    message: "Mode parameter testing completed successfully! ✅ All priority tests passed (6/6 = 100% success rate). Create Room API works correctly for both American and Jamaican modes. Get Room State API properly returns mode field in responses. WebSocket testing skipped as instructed due to infrastructure issues. Backend APIs are ready for multiplayer implementation."
-------\ No newline at end of file
