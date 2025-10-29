@@ -593,22 +593,34 @@ export default function Game3DScreen() {
           gl={{ antialias: true }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.4} />
+            {/* Space background animations */}
+            <GameStarfield />
+            <GameParticles />
+            <GameNebula />
+            <GameAura />
+            
+            {/* Lighting */}
+            <ambientLight intensity={0.3} color="#4169E1" />
             <directionalLight
               position={[10, 10, 5]}
-              intensity={1}
+              intensity={0.8}
               castShadow
               shadow-mapSize-width={1024}
               shadow-mapSize-height={1024}
             />
-            <pointLight position={[-10, 10, -5]} intensity={0.5} />
+            <pointLight position={[-10, 10, -5]} intensity={0.3} color="#9370DB" />
+            <pointLight position={[10, -5, 10]} intensity={0.3} color="#4ECDC4" />
             
+            {/* Game board */}
             <Board3D
               gameState={gameState}
               onSquareClick={handleSquareClick}
               selectedPiece={selectedPiece}
               legalMoves={legalMoves}
             />
+            
+            {/* Fog for depth */}
+            <fog attach="fog" args={['#0a0a1e', 15, 80]} />
           </Suspense>
         </Canvas>
       </View>
