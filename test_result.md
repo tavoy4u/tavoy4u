@@ -155,6 +155,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ PASS: Get Room State API working correctly. Returns complete game state with all required fields (id, room_code, board, turn, history, winner, created_at). Validates room existence and returns proper error for invalid rooms."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASS: Mode field verification completed. Both American and Jamaican room states correctly return mode field in response. American room (E529F9) returns mode='american', Jamaican room (0488DB) returns mode='jamaican'. All required fields present including mode parameter."
 
   - task: "WebSocket Connection"
     implemented: true
