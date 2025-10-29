@@ -724,6 +724,36 @@ const styles = StyleSheet.create({
   playerInfo: {
     alignItems: 'center',
   },
+  playerNames: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%',
+    marginVertical: 12,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+  },
+  playerNameBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  playerLabel: {
+    fontSize: 12,
+    color: '#AAAAAA',
+    marginBottom: 4,
+  },
+  playerNameText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFD700',
+  },
+  vsText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4ECDC4',
+    marginHorizontal: 8,
+  },
   playerText: {
     fontSize: 16,
     color: '#AAAAAA',
