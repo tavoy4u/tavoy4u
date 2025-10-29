@@ -385,13 +385,14 @@ async def create_room(mode: str = "american", player_name: str = "Player", red_c
     return {"room_code": room_code}
 
 @api_router.post("/join-room/{room_code}")
-async def join_room(room_code: str, player_name: str = "Player"):
+async def join_room(room_code: str, player_name: str = "Player", black_class: str = "european"):
     game = manager.get_game(room_code)
     if not game:
         return {"error": "Room not found"}
     
-    # Set black player name
+    # Set black player name and class
     game.black_player_name = player_name
+    game.black_class = black_class
     manager.update_game(room_code, game)
     
     return {"success": True, "game_state": game.model_dump()}
