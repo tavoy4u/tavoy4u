@@ -48,7 +48,7 @@ export default function ModeSelectScreen() {
 
             <TouchableOpacity 
               style={[styles.button, styles.secondaryButton]}
-              onPress={() => router.push(`/class-select?mode=${mode}&type=multi`)}
+              onPress={() => router.push(`/join-game?mode=${mode}`)}
             >
               <Text style={styles.buttonText}>🌴 Join Game</Text>
             </TouchableOpacity>
