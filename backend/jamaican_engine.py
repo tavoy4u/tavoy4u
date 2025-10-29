@@ -1,5 +1,7 @@
-from typing import List, Optional
-from server import Piece, Square, Move, GameState, PieceColor, PieceRank
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from server import Piece, Square, Move, GameState, PieceColor, PieceRank
 
 class JamaicanCheckersEngine:
     """Jamaican Checkers rules engine with multi-capture support"""
