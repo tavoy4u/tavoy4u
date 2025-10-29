@@ -28,7 +28,7 @@ export default function JoinGameScreen() {
         Alert.alert('Error', 'Room not found. Please check the code.');
       } else {
         // Join as black player, pass mode and class from room data
-        router.push(`/game?room=${roomCode.trim().toUpperCase()}&color=black&mode=${data.mode || mode}&class=${data.black_class || 'jamaican'}`);
+        router.push(`/game-3d?room=${roomCode.trim().toUpperCase()}&color=black&mode=${data.mode || mode}&class=${data.black_class || 'jamaican'}`);
       }
     } catch (err) {
       Alert.alert('Error', 'Failed to join room. Please try again.');
