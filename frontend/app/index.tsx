@@ -44,17 +44,17 @@ export default function HomeScreen() {
           {/* Action Buttons */}
           <View style={styles.buttonContainer}>
             <TouchableOpacity 
-              style={[styles.button, styles.tertiaryButton]}
-              onPress={() => router.push('/how-to-play')}
-            >
-              <Text style={styles.buttonTextDark}>📖 How to Play</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
               style={[styles.button, styles.secondaryButton]}
               onPress={() => router.push('/leaderboard')}
             >
               <Text style={styles.buttonText}>🏆 Leaderboard</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.button, styles.secondaryButton]}
+              onPress={() => router.push('/about')}
+            >
+              <Text style={styles.buttonText}>ℹ️ About Game</Text>
             </TouchableOpacity>
           </View>
 
