@@ -192,6 +192,24 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
   const SQUARE_SIZE = 1;
   const BOARD_OFFSET = -3.5;
   
+  // Function to render character based on class
+  const renderCharacterPiece = (classId: string, isKing: boolean, position: [number, number, number], onClick: () => void) => {
+    const adjustedPosition: [number, number, number] = [position[0], position[1] + 0.5, position[2]];
+    
+    switch (classId) {
+      case 'dbz':
+        return <DBZCharacter key={`char-${position}`} isKing={isKing} position={adjustedPosition} onClick={onClick} />;
+      case 'jamaican':
+        return <JamaicanCharacter key={`char-${position}`} isKing={isKing} position={adjustedPosition} onClick={onClick} />;
+      case 'european':
+        return <EuropeanCharacter key={`char-${position}`} isKing={isKing} position={adjustedPosition} onClick={onClick} />;
+      case 'sailormoon':
+        return <SailorMoonCharacter key={`char-${position}`} isKing={isKing} position={adjustedPosition} onClick={onClick} />;
+      default:
+        return <EuropeanCharacter key={`char-${position}`} isKing={isKing} position={adjustedPosition} onClick={onClick} />;
+    }
+  };
+  
   return (
     <group>
       {/* Board Base */}
@@ -237,35 +255,14 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
         const isRed = piece.color === 'red';
         const isBlack = piece.color === 'black';
         
-        // BLACK pieces - DBZ characters
-        if (isBlack) {
-          console.log(`Rendering BLACK ${isKing ? 'KING' : 'MAN'} at position [${x}, ${z}]`);
-          if (isKing) {
-            return <DBZKingPiece key={piece.id} position={[x, 0, z]} onClick={() => onSquareClick(piece.square.row, piece.square.col)} />;
-          } else {
-            return <DBZManPiece key={piece.id} position={[x, 0, z]} onClick={() => onSquareClick(piece.square.row, piece.square.col)} />;
-          }
-        }
+        // Use character class from game state
+        const classToUse = isRed ? gameState.red_class : gameState.black_class;
         
-        // RED pieces - Classic style
-        return (
-          <group key={piece.id} position={[x, 0.5, z]}>
-            <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
-              <cylinderGeometry args={[0.35, 0.35, 0.15, 32]} />
-              <meshStandardMaterial 
-                color="#FF6B6B"
-                roughness={0.3}
-                metalness={0.7}
-              />
-            </mesh>
-            
-            {isKing && (
-              <mesh position={[0, 0.25, 0]} castShadow>
-                <coneGeometry args={[0.2, 0.3, 8]} />
-                <meshStandardMaterial color="#FFD700" metalness={0.9} roughness={0.1} />
-              </mesh>
-            )}
-          </group>
+        return renderCharacterPiece(
+          classToUse || 'european',
+          isKing,
+          [x, 0, z],
+          () => onSquareClick(piece.square.row, piece.square.col)
         );
       })}
     </group>
