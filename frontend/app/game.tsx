@@ -53,54 +53,117 @@ export default function GameScreen() {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    connectWebSocket();
+    // Try WebSocket first, fallback to polling if it fails
+    loadInitialGameState();
+    const wsAttempt = connectWebSocket();
+    
+    // If WebSocket doesn't connect in 3 seconds, start polling
+    const fallbackTimer = setTimeout(() => {
+      if (!connected && !wsRef.current) {
+        console.log('WebSocket failed, switching to polling mode');
+        startPolling();
+      }
+    }, 3000);
     
     return () => {
+      clearTimeout(fallbackTimer);
+      stopPolling();
       if (wsRef.current) {
         wsRef.current.close();
       }
     };
   }, [roomCode]);
 
-  const connectWebSocket = () => {
-    const wsUrl = BACKEND_URL?.replace('http', 'ws').replace('https', 'wss') || '';
-    const ws = new WebSocket(`${wsUrl}/ws/${roomCode}`);
-    
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-      setConnected(true);
+  const loadInitialGameState = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/room/${roomCode}`);
+      const data = await response.json();
       
-      // Send join message
-      ws.send(JSON.stringify({
-        type: 'join',
-        color: playerColor,
-        player_id: `player_${Date.now()}`
-      }));
-    };
-    
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      
-      if (message.type === 'game_state') {
-        setGameState(message.data);
-      } else if (message.type === 'player_joined') {
-        console.log('Player joined:', message.data);
-      } else if (message.type === 'error') {
-        Alert.alert('Error', message.message);
+      if (!data.error) {
+        setGameState(data);
+        setConnected(true);
+      } else {
+        Alert.alert('Error', 'Room not found');
       }
-    };
-    
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      setConnected(false);
-    };
-    
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-      setConnected(false);
-    };
-    
-    wsRef.current = ws;
+    } catch (err) {
+      console.error('Error loading game state:', err);
+      Alert.alert('Error', 'Failed to load game');
+    }
+  };
+
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startPolling = () => {
+    // Poll every 2 seconds
+    pollingIntervalRef.current = setInterval(async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/room/${roomCode}`);
+        const data = await response.json();
+        
+        if (!data.error) {
+          setGameState(data);
+          setConnected(true);
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    }, 2000);
+  };
+
+  const stopPolling = () => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+  };
+
+  const connectWebSocket = () => {
+    try {
+      const wsUrl = BACKEND_URL?.replace('http', 'ws').replace('https', 'wss') || '';
+      const ws = new WebSocket(`${wsUrl}/ws/${roomCode}`);
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        setConnected(true);
+        stopPolling(); // Stop polling if WebSocket connects
+        
+        // Send join message
+        ws.send(JSON.stringify({
+          type: 'join',
+          color: playerColor,
+          player_id: `player_${Date.now()}`
+        }));
+      };
+      
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        
+        if (message.type === 'game_state') {
+          setGameState(message.data);
+        } else if (message.type === 'player_joined') {
+          console.log('Player joined:', message.data);
+        } else if (message.type === 'error') {
+          Alert.alert('Error', message.message);
+        }
+      };
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        setConnected(false);
+      };
+      
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        setConnected(false);
+        // Start polling as fallback
+        startPolling();
+      };
+      
+      wsRef.current = ws;
+    } catch (err) {
+      console.error('WebSocket connection failed:', err);
+      startPolling();
+    }
   };
 
   const calculateLegalMoves = (piece: Piece): Square[] => {
