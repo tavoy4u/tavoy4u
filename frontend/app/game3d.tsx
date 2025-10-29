@@ -237,6 +237,7 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
         
         // BLACK pieces - DBZ characters
         if (isBlack) {
+          console.log(`Rendering BLACK ${isKing ? 'KING' : 'MAN'} at position [${x}, ${z}]`);
           if (isKing) {
             return <DBZKingPiece key={piece.id} position={[x, 0, z]} onClick={() => onSquareClick(piece.square.row, piece.square.col)} />;
           } else {
