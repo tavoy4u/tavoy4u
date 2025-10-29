@@ -642,7 +642,7 @@ export default function Game3DScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0a0a1e',
   },
   header: {
     padding: 16,
