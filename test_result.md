@@ -244,6 +244,18 @@ frontend:
         agent: "testing"
         comment: "Not testing frontend as per instructions"
 
+  - task: "Multiplayer Game Screen - Mode Support"
+    implemented: false
+    working: "NA"
+    file: "frontend/app/game.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to update game.tsx to: 1) Accept and handle mode parameter (american/jamaican), 2) Use different game logic based on mode, 3) Render pieces based on selected class, 4) Support Jamaican-specific rules (Flying Kings, Backwards Tek, Hoof, Multi-Tek)"
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
