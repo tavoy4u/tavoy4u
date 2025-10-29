@@ -76,8 +76,10 @@ class GameState(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     red_player: Optional[str] = None
     black_player: Optional[str] = None
-    red_player_name: Optional[str] = None  # Display name for red player
-    black_player_name: Optional[str] = None  # Display name for black player
+    red_player_name: Optional[str] = None
+    black_player_name: Optional[str] = None
+    red_class: str = "dbz"  # Player class: dbz, jamaican, european, sailormoon
+    black_class: str = "dbz"
     mode: str = "american"  # "american" or "jamaican"
     capturing_piece: Optional[Square] = None  # For multi-capture chains
 
