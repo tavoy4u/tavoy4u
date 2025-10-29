@@ -14,7 +14,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://bt-boardgame.preview.emergentagent.com"
+BACKEND_URL = "https://tekmaster.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 
