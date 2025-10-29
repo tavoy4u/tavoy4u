@@ -498,6 +498,8 @@ export default function Game3DScreen() {
               castShadow
               shadow-mapSize-width={1024}
               shadow-mapSize-height={1024}
+              shadow-bias={-0.0001}
+              shadow-opacity={0.7}
             />
             <pointLight position={[-10, 10, -5]} intensity={0.3} color="#9370DB" />
             <pointLight position={[10, -5, 10]} intensity={0.3} color="#4ECDC4" />
