@@ -954,6 +954,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: '#333',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 8,
+    transform: [{ translateY: -4 }], // Lift pieces up for 3D effect
   },
   redPiece: {
     backgroundColor: '#FF6B6B',
