@@ -44,202 +44,9 @@ interface GameState {
 }
 
 // 3D Board Component
-function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves, playerClass }: any) {
+function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
   const SQUARE_SIZE = 1;
   const BOARD_OFFSET = -3.5;
-  
-  // Load DBZ textures - use try/catch to handle any loading errors
-  let dbzManTexture, dbzKingTexture;
-  try {
-    dbzManTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-man.png'));
-    dbzKingTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-king.png'));
-  } catch (e) {
-    console.error('Error loading DBZ textures:', e);
-  }
-  
-  // Function to render piece based on class
-  const renderPieceByClass = (piece: Piece, x: number, z: number) => {
-    const isKing = piece.rank === 'king';
-    const isRed = piece.color === 'red';
-    const pieceClass = (isRed ? gameState.red_class : gameState.black_class) || 'jamaican';
-    
-    console.log(`Rendering ${isRed ? 'red' : 'black'} ${isKing ? 'king' : 'man'} with class: ${pieceClass}`);
-    
-    switch (pieceClass) {
-      case 'dbz':
-        // DBZ: Cylindrical base + character sprite
-        return (
-          <group key={piece.id} position={[x, 0.5, z]}>
-            <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
-              <cylinderGeometry args={[0.35, 0.35, 0.15, 32]} />
-              <meshStandardMaterial 
-                color={isRed ? '#FF6B6B' : '#2C3E50'}
-                roughness={0.3}
-                metalness={0.7}
-              />
-            </mesh>
-            
-            <sprite position={[0, 0.7, 0]} scale={[0.9, 0.9, 1]}>
-              <spriteMaterial 
-                map={isKing ? dbzKingTexture : dbzManTexture}
-                transparent={true}
-                opacity={1}
-              />
-            </sprite>
-          </group>
-        );
-        
-      case 'jamaican':
-        // Jamaican: Tropical style with palm tree emoji crown
-        return (
-          <group key={piece.id} position={[x, 0.5, z]}>
-            <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
-              <cylinderGeometry args={[0.35, 0.35, 0.2, 32]} />
-              <meshStandardMaterial 
-                color={isRed ? '#FFD700' : '#228B22'}
-                roughness={0.4}
-                metalness={0.5}
-              />
-            </mesh>
-            
-            {/* Decorative band */}
-            <mesh position={[0, 0.05, 0]} castShadow>
-              <cylinderGeometry args={[0.37, 0.37, 0.08, 32]} />
-              <meshStandardMaterial color={isRed ? '#FF6B6B' : '#1a5c1a'} />
-            </mesh>
-            
-            {isKing && (
-              <mesh position={[0, 0.3, 0]} castShadow>
-                <coneGeometry args={[0.25, 0.35, 8]} />
-                <meshStandardMaterial color="#FFD700" metalness={0.9} roughness={0.1} />
-              </mesh>
-            )}
-          </group>
-        );
-        
-      case 'european':
-        // European: Castle tower style
-        return (
-          <group key={piece.id} position={[x, 0.5, z]}>
-            {/* Base */}
-            <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
-              <cylinderGeometry args={[0.4, 0.35, 0.15, 6]} />
-              <meshStandardMaterial 
-                color={isRed ? '#8B0000' : '#2F4F4F'}
-                roughness={0.8}
-                metalness={0.3}
-              />
-            </mesh>
-            
-            {/* Tower body */}
-            <mesh position={[0, 0.15, 0]} castShadow>
-              <cylinderGeometry args={[0.3, 0.35, 0.2, 6]} />
-              <meshStandardMaterial 
-                color={isRed ? '#A52A2A' : '#696969'}
-                roughness={0.8}
-              />
-            </mesh>
-            
-            {isKing && (
-              <>
-                {/* Castle battlements */}
-                {[0, 60, 120, 180, 240, 300].map((angle, i) => {
-                  const rad = (angle * Math.PI) / 180;
-                  return (
-                    <mesh
-                      key={i}
-                      position={[Math.cos(rad) * 0.25, 0.35, Math.sin(rad) * 0.25]}
-                      castShadow
-                    >
-                      <boxGeometry args={[0.12, 0.15, 0.12]} />
-                      <meshStandardMaterial color="#FFD700" />
-                    </mesh>
-                  );
-                })}
-              </>
-            )}
-          </group>
-        );
-        
-      case 'sailormoon':
-        // Sailor Moon: Magical sparkly style
-        return (
-          <group key={piece.id} position={[x, 0.5, z]}>
-            {/* Star-shaped base */}
-            <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
-              <cylinderGeometry args={[0.35, 0.35, 0.15, 5]} />
-              <meshStandardMaterial 
-                color={isRed ? '#FF69B4' : '#9370DB'}
-                roughness={0.2}
-                metalness={0.8}
-                emissive={isRed ? '#FF1493' : '#8A2BE2'}
-                emissiveIntensity={0.3}
-              />
-            </mesh>
-            
-            {/* Magical glow ring */}
-            <mesh position={[0, 0.1, 0]} rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[0.4, 0.04, 8, 16]} />
-              <meshStandardMaterial 
-                color="#FFD700"
-                emissive="#FFD700"
-                emissiveIntensity={0.5}
-                transparent={true}
-                opacity={0.6}
-              />
-            </mesh>
-            
-            {isKing && (
-              <>
-                {/* Moon crown */}
-                <mesh position={[0, 0.3, 0]} castShadow>
-                  <sphereGeometry args={[0.15, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-                  <meshStandardMaterial 
-                    color="#FFD700" 
-                    metalness={0.9} 
-                    roughness={0.1}
-                    emissive="#FFD700"
-                    emissiveIntensity={0.3}
-                  />
-                </mesh>
-                
-                {/* Star on top */}
-                <mesh position={[0, 0.45, 0]} castShadow>
-                  <cylinderGeometry args={[0.12, 0.12, 0.05, 5]} />
-                  <meshStandardMaterial 
-                    color="#FFF" 
-                    emissive="#FFF"
-                    emissiveIntensity={0.5}
-                  />
-                </mesh>
-              </>
-            )}
-          </group>
-        );
-        
-      default:
-        // Default fallback
-        return (
-          <group key={piece.id} position={[x, 0.5, z]}>
-            <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
-              <cylinderGeometry args={[0.35, 0.35, 0.15, 32]} />
-              <meshStandardMaterial 
-                color={isRed ? '#FF6B6B' : '#2C3E50'}
-                roughness={0.3}
-                metalness={0.7}
-              />
-            </mesh>
-            
-            {isKing && (
-              <mesh position={[0, 0.25, 0]} castShadow>
-                <coneGeometry args={[0.2, 0.3, 8]} />
-                <meshStandardMaterial color="#FFD700" metalness={0.9} roughness={0.1} />
-              </mesh>
-            )}
-          </group>
-        );
-    }
-  };
   
   return (
     <group>
@@ -282,7 +89,30 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves, playerCl
       {gameState.board.map((piece: Piece) => {
         const x = piece.square.col * SQUARE_SIZE + BOARD_OFFSET;
         const z = piece.square.row * SQUARE_SIZE + BOARD_OFFSET;
-        return renderPieceByClass(piece, x, z);
+        const isKing = piece.rank === 'king';
+        const isRed = piece.color === 'red';
+        
+        return (
+          <group key={piece.id} position={[x, 0.5, z]}>
+            {/* Piece body */}
+            <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
+              <cylinderGeometry args={[0.35, 0.35, 0.15, 32]} />
+              <meshStandardMaterial 
+                color={isRed ? '#FF6B6B' : '#2C3E50'}
+                roughness={0.3}
+                metalness={0.7}
+              />
+            </mesh>
+            
+            {/* King crown */}
+            {isKing && (
+              <mesh position={[0, 0.25, 0]} castShadow>
+                <coneGeometry args={[0.2, 0.3, 8]} />
+                <meshStandardMaterial color="#FFD700" metalness={0.9} roughness={0.1} />
+              </mesh>
+            )}
+          </group>
+        );
       })}
     </group>
   );
