@@ -40,8 +40,8 @@ export const PIECE_CLASSES: Record<string, PieceClass> = {
     kingIcon: '💫',
     description: 'Super Saiyans and powerful fighters',
     color: '#FF8C00',
-    manImage: require('../assets/pieces/dbz-pieces.png'),
-    kingImage: require('../assets/pieces/dbz-pieces.png'),
+    manImage: require('../assets/pieces/dbz-man.png'),
+    kingImage: require('../assets/pieces/dbz-king.png'),
     hasCustomImage: true,
   },
   sailormoon: {
