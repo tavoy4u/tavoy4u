@@ -381,6 +381,53 @@ async def get_room(room_code: str):
         return {"error": "Room not found"}
     return game.model_dump()
 
+@api_router.post("/room/{room_code}/move")
+async def make_move(room_code: str, move_data: dict):
+    """REST API endpoint for making moves (fallback for when WebSocket fails)"""
+    game = manager.get_game(room_code)
+    
+    if not game:
+        return {"error": "Game not found"}
+    
+    if game.winner:
+        return {"error": "Game already finished"}
+    
+    # Select the correct engine based on game mode
+    if game.mode == "jamaican" and JAMAICAN_ENGINE_AVAILABLE:
+        engine = JamaicanCheckersEngine
+    else:
+        engine = CheckersEngine
+    
+    try:
+        # Parse move
+        move = Move(
+            from_square=Square(**move_data["from_square"]),
+            to_square=Square(**move_data["to_square"]),
+            captured=[Square(**sq) for sq in move_data.get("captured", [])],
+            promotes=move_data.get("promotes", False)
+        )
+        
+        # Validate move
+        legal_moves = engine.get_all_legal_moves(game)
+        is_valid = any(
+            m.from_square == move.from_square and 
+            m.to_square == move.to_square 
+            for m in legal_moves
+        )
+        
+        if not is_valid:
+            return {"error": "Illegal move"}
+        
+        # Apply move
+        new_game = engine.apply_move(game, move)
+        manager.update_game(room_code, new_game)
+        
+        return {"success": True, "game_state": new_game.model_dump()}
+    
+    except Exception as e:
+        logger.error(f"Move error: {e}")
+        return {"error": str(e)}
+
 # ===== WEBSOCKET ROUTE =====
 
 @app.websocket("/ws/{room_code}")
