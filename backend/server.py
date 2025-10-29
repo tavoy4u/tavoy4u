@@ -13,23 +13,6 @@ import json
 import asyncio
 from enum import Enum
 
-# Import Jamaican engine
-try:
-    import jamaican_engine
-    from jamaican_engine import JamaicanCheckersEngine
-    JAMAICAN_ENGINE_AVAILABLE = True
-    # Inject classes into jamaican_engine to resolve runtime dependencies
-    jamaican_engine.Piece = Piece
-    jamaican_engine.Square = Square
-    jamaican_engine.Move = Move
-    jamaican_engine.GameState = GameState
-    jamaican_engine.PieceColor = PieceColor
-    jamaican_engine.PieceRank = PieceRank
-except ImportError as e:
-    JAMAICAN_ENGINE_AVAILABLE = False
-    logger = logging.getLogger(__name__)
-    logger.warning(f"Jamaican engine not available: {e}")
-
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
