@@ -456,7 +456,6 @@ export default function Game3DScreen() {
               onSquareClick={handleSquareClick}
               selectedPiece={selectedPiece}
               legalMoves={legalMoves}
-              playerClass={playerClass}
             />
           </Suspense>
         </Canvas>
