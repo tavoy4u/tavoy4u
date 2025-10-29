@@ -207,6 +207,30 @@ backend:
         agent: "testing"
         comment: "✅ PASS: Board validation logic working correctly. Pieces correctly placed only on dark squares, middle rows (3,4) empty as expected, proper piece positioning validated."
 
+  - task: "Jamaican Mode Integration"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py, backend/jamaican_engine.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing backend support for Jamaican game mode. Need to: 1) Fix jamaican_engine import issues, 2) Integrate JamaicanCheckersEngine for mode='jamaican', 3) Update move validation and game logic to use correct engine based on mode"
+
+  - task: "Piece Class Storage"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to add piece class storage to GameState model so multiplayer games can track which piece design each player selected"
+
 frontend:
   - task: "Frontend UI"
     implemented: false
