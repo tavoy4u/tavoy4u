@@ -8,6 +8,7 @@ export default function CreateGameScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const mode = (params.mode as string) || 'american';
+  const playerName = (params.playerName as string) || 'Player';
   
   const [loading, setLoading] = useState(true);
   const [roomCode, setRoomCode] = useState('');
@@ -20,7 +21,7 @@ export default function CreateGameScreen() {
   const createRoom = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}`, {
+      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}&player_name=${encodeURIComponent(playerName)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
