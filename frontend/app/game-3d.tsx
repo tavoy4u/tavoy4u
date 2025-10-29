@@ -48,9 +48,14 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves, playerCl
   const SQUARE_SIZE = 1;
   const BOARD_OFFSET = -3.5;
   
-  // Load DBZ textures
-  const dbzManTexture = new THREE.TextureLoader().load(require('../assets/dbz-man.png'));
-  const dbzKingTexture = new THREE.TextureLoader().load(require('../assets/dbz-king.png'));
+  // Load DBZ textures - use try/catch to handle any loading errors
+  let dbzManTexture, dbzKingTexture;
+  try {
+    dbzManTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-man.png'));
+    dbzKingTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-king.png'));
+  } catch (e) {
+    console.error('Error loading DBZ textures:', e);
+  }
   
   // Function to render piece based on class
   const renderPieceByClass = (piece: Piece, x: number, z: number) => {
