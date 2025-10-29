@@ -375,9 +375,79 @@ async def root():
     return {"message": "Tropical Island Checkers API"}
 
 @api_router.post("/create-room")
-async def create_room(mode: str = "american"):
-    room_code = manager.create_room(mode)
+async def create_room(mode: str = "american", player_name: str = "Player"):
+    room_code = manager.create_room(mode, player_name)
     return {"room_code": room_code}
+
+@api_router.post("/join-room/{room_code}")
+async def join_room(room_code: str, player_name: str = "Player"):
+    game = manager.get_game(room_code)
+    if not game:
+        return {"error": "Room not found"}
+    
+    # Set black player name
+    game.black_player_name = player_name
+    manager.update_game(room_code, game)
+    
+    return {"success": True, "game_state": game.model_dump()}
+
+@api_router.get("/leaderboard")
+async def get_leaderboard():
+    """Get top players by wins"""
+    try:
+        leaderboard = await db.leaderboard.find().sort("wins", -1).limit(100).to_list(100)
+        return {"leaderboard": leaderboard}
+    except Exception as e:
+        logger.error(f"Error fetching leaderboard: {e}")
+        return {"leaderboard": []}
+
+@api_router.post("/record-win")
+async def record_win(winner_name: str, loser_name: str):
+    """Record a game result"""
+    try:
+        # Update winner stats
+        winner = await db.leaderboard.find_one({"player_name": winner_name})
+        if winner:
+            await db.leaderboard.update_one(
+                {"player_name": winner_name},
+                {
+                    "$inc": {"wins": 1, "games_played": 1},
+                    "$set": {"last_played": datetime.utcnow()}
+                }
+            )
+        else:
+            await db.leaderboard.insert_one({
+                "player_name": winner_name,
+                "wins": 1,
+                "losses": 0,
+                "games_played": 1,
+                "last_played": datetime.utcnow()
+            })
+        
+        # Update loser stats
+        loser = await db.leaderboard.find_one({"player_name": loser_name})
+        if loser:
+            await db.leaderboard.update_one(
+                {"player_name": loser_name},
+                {
+                    "$inc": {"losses": 1, "games_played": 1},
+                    "$set": {"last_played": datetime.utcnow()}
+                }
+            )
+        else:
+            await db.leaderboard.insert_one({
+                "player_name": loser_name,
+                "wins": 0,
+                "losses": 1,
+                "games_played": 1,
+                "last_played": datetime.utcnow()
+            })
+        
+        logger.info(f"Recorded win: {winner_name} beat {loser_name}")
+        return {"success": True}
+    except Exception as e:
+        logger.error(f"Error recording win: {e}")
+        return {"error": str(e)}
 
 @api_router.get("/room/{room_code}")
 async def get_room(room_code: str):
