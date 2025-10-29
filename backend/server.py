@@ -412,6 +412,12 @@ async def websocket_endpoint(websocket: WebSocket, room_code: str):
                     await websocket.send_json({"type": "error", "message": "Game already finished"})
                     continue
                 
+                # Select the correct engine based on game mode
+                if game.mode == "jamaican" and JAMAICAN_ENGINE_AVAILABLE:
+                    engine = JamaicanCheckersEngine
+                else:
+                    engine = CheckersEngine
+                
                 # Parse move
                 move = Move(
                     from_square=Square(**move_data["from_square"]),
@@ -421,7 +427,7 @@ async def websocket_endpoint(websocket: WebSocket, room_code: str):
                 )
                 
                 # Validate move
-                legal_moves = CheckersEngine.get_all_legal_moves(game)
+                legal_moves = engine.get_all_legal_moves(game)
                 is_valid = any(
                     m.from_square == move.from_square and 
                     m.to_square == move.to_square 
@@ -433,7 +439,7 @@ async def websocket_endpoint(websocket: WebSocket, room_code: str):
                     continue
                 
                 # Apply move
-                new_game = CheckersEngine.apply_move(game, move)
+                new_game = engine.apply_move(game, move)
                 manager.update_game(room_code, new_game)
                 
                 # Broadcast new state
