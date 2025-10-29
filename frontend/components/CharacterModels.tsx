@@ -104,9 +104,8 @@ export function JamaicanCharacter({ isKing = false, position = [0, 0, 0] }: any)
   
   useFrame((state) => {
     if (groupRef.current) {
-      // Rhythmic bounce animation
-      groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 1.5) * 0.08;
-      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.15;
+      // Subtle rotation only - stands on board
+      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.05;
     }
   });
   
