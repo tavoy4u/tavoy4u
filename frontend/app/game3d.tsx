@@ -43,16 +43,152 @@ interface GameState {
   black_class: string;
 }
 
-// 3D Board Component with texture loading
+// DBZ Character Components
+function DBZManPiece({ position, onClick }: any) {
+  return (
+    <group position={position} onClick={onClick}>
+      {/* Base platform */}
+      <mesh position={[0, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.35, 0.35, 0.15, 32]} />
+        <meshStandardMaterial color="#2C3E50" roughness={0.3} metalness={0.7} />
+      </mesh>
+      
+      {/* Body - Orange Gi */}
+      <mesh position={[0, 0.4, 0]} castShadow>
+        <cylinderGeometry args={[0.15, 0.2, 0.35, 16]} />
+        <meshStandardMaterial color="#FF6B00" />
+      </mesh>
+      
+      {/* Head - Skin tone */}
+      <mesh position={[0, 0.7, 0]} castShadow>
+        <sphereGeometry args={[0.12, 16, 16]} />
+        <meshStandardMaterial color="#FFD4A3" />
+      </mesh>
+      
+      {/* Black spiky hair */}
+      <mesh position={[0, 0.8, 0]} castShadow>
+        <coneGeometry args={[0.12, 0.15, 8]} />
+        <meshStandardMaterial color="#1a1a1a" />
+      </mesh>
+      <mesh position={[-0.06, 0.78, 0]} castShadow rotation={[0, 0, Math.PI / 6]}>
+        <coneGeometry args={[0.06, 0.12, 6]} />
+        <meshStandardMaterial color="#1a1a1a" />
+      </mesh>
+      <mesh position={[0.06, 0.78, 0]} castShadow rotation={[0, 0, -Math.PI / 6]}>
+        <coneGeometry args={[0.06, 0.12, 6]} />
+        <meshStandardMaterial color="#1a1a1a" />
+      </mesh>
+      
+      {/* Arms */}
+      <mesh position={[-0.22, 0.45, 0]} castShadow rotation={[0, 0, Math.PI / 4]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.25, 8]} />
+        <meshStandardMaterial color="#FFD4A3" />
+      </mesh>
+      <mesh position={[0.22, 0.45, 0]} castShadow rotation={[0, 0, -Math.PI / 4]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.25, 8]} />
+        <meshStandardMaterial color="#FFD4A3" />
+      </mesh>
+      
+      {/* Blue belt */}
+      <mesh position={[0, 0.3, 0]} castShadow>
+        <cylinderGeometry args={[0.21, 0.21, 0.05, 16]} />
+        <meshStandardMaterial color="#0066CC" />
+      </mesh>
+    </group>
+  );
+}
+
+function DBZKingPiece({ position, onClick }: any) {
+  return (
+    <group position={position} onClick={onClick}>
+      {/* Base platform */}
+      <mesh position={[0, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.35, 0.35, 0.15, 32]} />
+        <meshStandardMaterial color="#2C3E50" roughness={0.3} metalness={0.7} />
+      </mesh>
+      
+      {/* Body - Orange Gi */}
+      <mesh position={[0, 0.4, 0]} castShadow>
+        <cylinderGeometry args={[0.15, 0.2, 0.35, 16]} />
+        <meshStandardMaterial color="#FF6B00" />
+      </mesh>
+      
+      {/* Head - Skin tone */}
+      <mesh position={[0, 0.7, 0]} castShadow>
+        <sphereGeometry args={[0.12, 16, 16]} />
+        <meshStandardMaterial color="#FFD4A3" />
+      </mesh>
+      
+      {/* GOLDEN SUPER SAIYAN HAIR - More dramatic! */}
+      <mesh position={[0, 0.85, 0]} castShadow>
+        <coneGeometry args={[0.15, 0.25, 8]} />
+        <meshStandardMaterial 
+          color="#FFD700" 
+          emissive="#FFD700"
+          emissiveIntensity={0.5}
+          metalness={0.3}
+        />
+      </mesh>
+      <mesh position={[-0.08, 0.82, 0]} castShadow rotation={[0, 0, Math.PI / 5]}>
+        <coneGeometry args={[0.08, 0.18, 6]} />
+        <meshStandardMaterial 
+          color="#FFD700" 
+          emissive="#FFD700"
+          emissiveIntensity={0.5}
+        />
+      </mesh>
+      <mesh position={[0.08, 0.82, 0]} castShadow rotation={[0, 0, -Math.PI / 5]}>
+        <coneGeometry args={[0.08, 0.18, 6]} />
+        <meshStandardMaterial 
+          color="#FFD700" 
+          emissive="#FFD700"
+          emissiveIntensity={0.5}
+        />
+      </mesh>
+      <mesh position={[0, 0.82, 0.08]} castShadow rotation={[Math.PI / 5, 0, 0]}>
+        <coneGeometry args={[0.06, 0.15, 6]} />
+        <meshStandardMaterial 
+          color="#FFD700" 
+          emissive="#FFD700"
+          emissiveIntensity={0.5}
+        />
+      </mesh>
+      
+      {/* Arms */}
+      <mesh position={[-0.22, 0.45, 0]} castShadow rotation={[0, 0, Math.PI / 4]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.25, 8]} />
+        <meshStandardMaterial color="#FFD4A3" />
+      </mesh>
+      <mesh position={[0.22, 0.45, 0]} castShadow rotation={[0, 0, -Math.PI / 4]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.25, 8]} />
+        <meshStandardMaterial color="#FFD4A3" />
+      </mesh>
+      
+      {/* Blue belt */}
+      <mesh position={[0, 0.3, 0]} castShadow>
+        <cylinderGeometry args={[0.21, 0.21, 0.05, 16]} />
+        <meshStandardMaterial color="#0066CC" />
+      </mesh>
+      
+      {/* Golden Aura Effect */}
+      <mesh position={[0, 0.5, 0]}>
+        <sphereGeometry args={[0.4, 16, 16]} />
+        <meshStandardMaterial 
+          color="#FFD700"
+          transparent={true}
+          opacity={0.15}
+          emissive="#FFD700"
+          emissiveIntensity={0.3}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+// 3D Board Component
 function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
   const SQUARE_SIZE = 1;
   const BOARD_OFFSET = -3.5;
-  
-  // Load DBZ textures using useLoader hook
-  const [dbzManTexture, dbzKingTexture] = useLoader(THREE.TextureLoader, [
-    require('../assets/pieces/dbz-man.png'),
-    require('../assets/pieces/dbz-king.png'),
-  ]);
   
   return (
     <group>
@@ -99,32 +235,28 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
         const isRed = piece.color === 'red';
         const isBlack = piece.color === 'black';
         
+        // BLACK pieces - DBZ characters
+        if (isBlack) {
+          if (isKing) {
+            return <DBZKingPiece key={piece.id} position={[x, 0, z]} onClick={() => onSquareClick(piece.square.row, piece.square.col)} />;
+          } else {
+            return <DBZManPiece key={piece.id} position={[x, 0, z]} onClick={() => onSquareClick(piece.square.row, piece.square.col)} />;
+          }
+        }
+        
+        // RED pieces - Classic style
         return (
           <group key={piece.id} position={[x, 0.5, z]}>
-            {/* Piece body */}
             <mesh castShadow onClick={() => onSquareClick(piece.square.row, piece.square.col)}>
               <cylinderGeometry args={[0.35, 0.35, 0.15, 32]} />
               <meshStandardMaterial 
-                color={isRed ? '#FF6B6B' : '#2C3E50'}
+                color="#FF6B6B"
                 roughness={0.3}
                 metalness={0.7}
               />
             </mesh>
             
-            {/* DBZ Character Sprite for BLACK pieces */}
-            {isBlack && dbzManTexture && dbzKingTexture && (
-              <sprite position={[0, 0.7, 0]} scale={[1.2, 1.2, 1]}>
-                <spriteMaterial 
-                  map={isKing ? dbzKingTexture : dbzManTexture}
-                  transparent={true}
-                  opacity={1}
-                  sizeAttenuation={false}
-                />
-              </sprite>
-            )}
-            
-            {/* King crown for RED pieces only */}
-            {isKing && isRed && (
+            {isKing && (
               <mesh position={[0, 0.25, 0]} castShadow>
                 <coneGeometry args={[0.2, 0.3, 8]} />
                 <meshStandardMaterial color="#FFD700" metalness={0.9} roughness={0.1} />
