@@ -59,6 +59,8 @@ class CheckersBackendTester:
     def __init__(self):
         self.results = TestResults()
         self.room_code = None
+        self.american_room = None
+        self.jamaican_room = None
         self.ws_messages = []
         self.ws_connected = False
         
