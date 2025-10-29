@@ -1,9 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-
-// Reduced shadow opacity for all characters (70% of original)
-const SHADOW_OPACITY = 0.7;
 
 // DBZ Character (Saiyan)
 export function DBZCharacter({ isKing = false, position = [0, 0, 0] }: any) {
@@ -17,34 +14,18 @@ export function DBZCharacter({ isKing = false, position = [0, 0, 0] }: any) {
     }
   });
   
-  // Apply shadow opacity to all children
-  useEffect(() => {
-    if (groupRef.current) {
-      groupRef.current.traverse((child) => {
-        if (child instanceof THREE.Mesh && child.castShadow) {
-          child.castShadow = true;
-          if (child.material) {
-            const material = child.material as THREE.Material;
-            material.transparent = true;
-            material.opacity = SHADOW_OPACITY;
-          }
-        }
-      });
-    }
-  }, []);
-  
   return (
     <group ref={groupRef} position={position}>
       {/* Body - Orange Gi */}
       <mesh position={[0, 0.5, 0]} castShadow>
         <capsuleGeometry args={[0.2, 0.5, 16, 16]} />
-        <meshStandardMaterial color="#FF6B00" transparent opacity={SHADOW_OPACITY} />
+        <meshStandardMaterial color="#FF6B00" />
       </mesh>
       
       {/* Head */}
       <mesh position={[0, 1, 0]} castShadow>
         <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="#FFD4A3" transparent opacity={SHADOW_OPACITY} />
+        <meshStandardMaterial color="#FFD4A3" />
       </mesh>
       
       {/* Hair */}
