@@ -8,6 +8,7 @@ export default function PlayerNameScreen() {
   const params = useLocalSearchParams();
   const mode = (params.mode as string) || 'american';
   const action = (params.action as string) || 'create'; // 'create' or 'join'
+  const selectedClass = (params.class as string) || 'dbz';
   
   const [playerName, setPlayerName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,11 +25,11 @@ export default function PlayerNameScreen() {
       // Save player name for future use
       await AsyncStorage.setItem('playerName', playerName.trim());
       
-      // Route based on action
+      // Route based on action with class
       if (action === 'create') {
-        router.push(`/create-game?mode=${mode}&playerName=${encodeURIComponent(playerName.trim())}`);
+        router.push(`/create-game?mode=${mode}&playerName=${encodeURIComponent(playerName.trim())}&class=${selectedClass}`);
       } else {
-        router.push(`/join-game?mode=${mode}&playerName=${encodeURIComponent(playerName.trim())}`);
+        router.push(`/join-game?mode=${mode}&playerName=${encodeURIComponent(playerName.trim())}&class=${selectedClass}`);
       }
     } catch (err) {
       console.error(err);
