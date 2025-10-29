@@ -8,7 +8,6 @@ export default function CreateGameScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const mode = (params.mode as string) || 'american';
-  const playerClass = (params.class as string) || 'jamaican';
   
   const [loading, setLoading] = useState(true);
   const [roomCode, setRoomCode] = useState('');
@@ -21,7 +20,7 @@ export default function CreateGameScreen() {
   const createRoom = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}&red_class=${playerClass}&black_class=${playerClass}`, {
+      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -52,7 +51,7 @@ export default function CreateGameScreen() {
   };
 
   const handleStartGame = () => {
-    router.push(`/game3d?room=${roomCode}&color=red&mode=${mode}&class=${playerClass}`);
+    router.push(`/game3d?room=${roomCode}&color=red&mode=${mode}`);
   };
 
   if (loading) {
