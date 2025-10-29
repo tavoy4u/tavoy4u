@@ -102,9 +102,45 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the Island Checkers Game backend API endpoints and WebSocket functionality"
+user_problem_statement: "Implement 4-class character selection system with 3D models (European, Dragon Ball Z, Jamaican, Sailor Moon) for checkers pieces"
 
 backend:
+  - task: "Character Class Storage in GameState"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added red_class and black_class fields to GameState model to store player class selections"
+  
+  - task: "Create Room API with Class Support"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated /api/create-room endpoint to accept red_class parameter and store in GameState"
+  
+  - task: "Join Room API with Class Support"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated /api/join-room endpoint to accept black_class parameter and store in GameState"
+  
   - task: "Health Check API"
     implemented: true
     working: true
