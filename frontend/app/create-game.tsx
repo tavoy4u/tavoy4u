@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Share } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export default function CreateGameScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const mode = (params.mode as string) || 'american';
+  const playerClass = (params.class as string) || 'jamaican';
+  
   const [loading, setLoading] = useState(true);
   const [roomCode, setRoomCode] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +21,7 @@ export default function CreateGameScreen() {
   const createRoom = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/create-room`, {
+      const response = await fetch(`${BACKEND_URL}/api/create-room?mode=${mode}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
