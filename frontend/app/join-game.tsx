@@ -8,6 +8,7 @@ export default function JoinGameScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const mode = (params.mode as string) || 'american';
+  const playerName = (params.playerName as string) || 'Player';
   
   const [roomCode, setRoomCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,14 +22,19 @@ export default function JoinGameScreen() {
     setLoading(true);
     
     try {
-      const response = await fetch(`${BACKEND_URL}/api/room/${roomCode.trim().toUpperCase()}`);
-      const data = await response.json();
+      // First, join the room with player name
+      const joinResponse = await fetch(`${BACKEND_URL}/api/join-room/${roomCode.trim().toUpperCase()}?player_name=${encodeURIComponent(playerName)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
       
-      if (data.error) {
+      const joinData = await joinResponse.json();
+      
+      if (joinData.error) {
         Alert.alert('Error', 'Room not found. Please check the code.');
       } else {
-        // Join as black player
-        router.push(`/game3d?room=${roomCode.trim().toUpperCase()}&color=black&mode=${data.mode || mode}`);
+        // Navigate to game with player name
+        router.push(`/game3d?room=${roomCode.trim().toUpperCase()}&color=black&mode=${joinData.game_state.mode || mode}&playerName=${encodeURIComponent(playerName)}`);
       }
     } catch (err) {
       Alert.alert('Error', 'Failed to join room. Please try again.');
