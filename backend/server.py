@@ -79,6 +79,26 @@ class GameState(BaseModel):
     mode: str = "american"  # "american" or "jamaican"
     capturing_piece: Optional[Square] = None  # For multi-capture chains
 
+# Import Jamaican engine after model definitions to avoid circular import
+try:
+    import jamaican_engine
+    from jamaican_engine import JamaicanCheckersEngine
+    JAMAICAN_ENGINE_AVAILABLE = True
+    # Inject classes into jamaican_engine to resolve runtime dependencies
+    jamaican_engine.Piece = Piece
+    jamaican_engine.Square = Square
+    jamaican_engine.Move = Move
+    jamaican_engine.GameState = GameState
+    jamaican_engine.PieceColor = PieceColor
+    jamaican_engine.PieceRank = PieceRank
+    logger.info("Jamaican engine loaded successfully")
+except ImportError as e:
+    JAMAICAN_ENGINE_AVAILABLE = False
+    logger.warning(f"Jamaican engine not available: {e}")
+except Exception as e:
+    JAMAICAN_ENGINE_AVAILABLE = False
+    logger.error(f"Error loading Jamaican engine: {e}")
+
 class CheckersEngine:
     """American Checkers rules engine"""
     
