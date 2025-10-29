@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import { GameStarfield, GameParticles, GameNebula, GameAura } from '../components/GameSpaceBackground';
+import { DBZCharacter, JamaicanCharacter, EuropeanCharacter, SailorMoonCharacter } from '../components/CharacterModels';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 const { width, height } = Dimensions.get('window');
