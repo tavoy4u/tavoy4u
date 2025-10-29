@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export default function JoinGameScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const mode = (params.mode as string) || 'american';
+  
   const [roomCode, setRoomCode] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -24,8 +27,8 @@ export default function JoinGameScreen() {
       if (data.error) {
         Alert.alert('Error', 'Room not found. Please check the code.');
       } else {
-        // Join as black player
-        router.push(`/game?room=${roomCode.trim().toUpperCase()}&color=black`);
+        // Join as black player, pass mode and class from room data
+        router.push(`/game?room=${roomCode.trim().toUpperCase()}&color=black&mode=${data.mode || mode}&class=${data.black_class || 'jamaican'}`);
       }
     } catch (err) {
       Alert.alert('Error', 'Failed to join room. Please try again.');
@@ -73,7 +76,7 @@ export default function JoinGameScreen() {
               style={[styles.button, styles.secondaryButton]} 
               onPress={() => router.back()}
             >
-              <Text style={styles.buttonText}>← Back to Home</Text>
+              <Text style={styles.buttonText}>← Back</Text>
             </TouchableOpacity>
           </View>
         </View>
