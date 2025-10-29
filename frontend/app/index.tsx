@@ -87,10 +87,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: 20,
+    zIndex: 1,
   },
   titleContainer: {
     alignItems: 'center',
