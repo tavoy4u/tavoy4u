@@ -79,10 +79,10 @@ class CheckersBackendTester:
         except Exception as e:
             self.results.add_result("Health Check API", False, f"Request failed: {str(e)}")
     
-    def test_create_room(self):
-        """Test POST /api/create-room - Create new game room"""
+    def test_create_room_american(self):
+        """Test POST /api/create-room?mode=american - Create American mode room"""
         try:
-            response = requests.post(f"{API_BASE}/create-room", timeout=10)
+            response = requests.post(f"{API_BASE}/create-room?mode=american", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
@@ -90,17 +90,41 @@ class CheckersBackendTester:
                     room_code = data["room_code"]
                     # Validate room code format (6 characters, uppercase)
                     if len(room_code) == 6 and room_code.isupper() and room_code.isalnum():
-                        self.room_code = room_code
-                        self.results.add_result("Create Room API", True, f"Room created: {room_code}")
+                        self.room_code = room_code  # Store for other tests
+                        self.american_room = room_code
+                        self.results.add_result("Create Room API - American Mode", True, f"American room created: {room_code}")
                     else:
-                        self.results.add_result("Create Room API", False, f"Invalid room code format: {room_code}")
+                        self.results.add_result("Create Room API - American Mode", False, f"Invalid room code format: {room_code}")
                 else:
-                    self.results.add_result("Create Room API", False, f"Missing room_code in response: {data}")
+                    self.results.add_result("Create Room API - American Mode", False, f"Missing room_code in response: {data}")
             else:
-                self.results.add_result("Create Room API", False, f"HTTP {response.status_code}: {response.text}")
+                self.results.add_result("Create Room API - American Mode", False, f"HTTP {response.status_code}: {response.text}")
                 
         except Exception as e:
-            self.results.add_result("Create Room API", False, f"Request failed: {str(e)}")
+            self.results.add_result("Create Room API - American Mode", False, f"Request failed: {str(e)}")
+
+    def test_create_room_jamaican(self):
+        """Test POST /api/create-room?mode=jamaican - Create Jamaican mode room"""
+        try:
+            response = requests.post(f"{API_BASE}/create-room?mode=jamaican", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "room_code" in data:
+                    room_code = data["room_code"]
+                    # Validate room code format (6 characters, uppercase)
+                    if len(room_code) == 6 and room_code.isupper() and room_code.isalnum():
+                        self.jamaican_room = room_code
+                        self.results.add_result("Create Room API - Jamaican Mode", True, f"Jamaican room created: {room_code}")
+                    else:
+                        self.results.add_result("Create Room API - Jamaican Mode", False, f"Invalid room code format: {room_code}")
+                else:
+                    self.results.add_result("Create Room API - Jamaican Mode", False, f"Missing room_code in response: {data}")
+            else:
+                self.results.add_result("Create Room API - Jamaican Mode", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.results.add_result("Create Room API - Jamaican Mode", False, f"Request failed: {str(e)}")
     
     def test_get_room_state(self):
         """Test GET /api/room/{room_code} - Get game state"""
