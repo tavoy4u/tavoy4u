@@ -3,9 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert, Image, Ima
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { getPieceIcon, getPieceClass } from '../utils/pieceClasses';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const BOARD_SIZE = Math.min(width - 32, 500);
 const SQUARE_SIZE = BOARD_SIZE / 8;
+
+// 3D Isometric settings
+const PERSPECTIVE = 1000;
+const ROTATE_X = -25; // Tilt board backwards
+const ROTATE_Z = 0; // Can add slight rotation if desired
 
 type PieceColor = 'red' | 'black';
 type PieceRank = 'man' | 'king';
