@@ -890,6 +890,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    paddingVertical: 60,
   },
   board: {
     width: BOARD_SIZE,
@@ -897,7 +898,17 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: '#8B4513',
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: 'visible',
+    transform: [
+      { perspective: PERSPECTIVE },
+      { rotateX: `${ROTATE_X}deg` },
+      { rotateZ: `${ROTATE_Z}deg` },
+    ],
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.5,
+    shadowRadius: 30,
+    elevation: 20,
   },
   row: {
     flexDirection: 'row',
