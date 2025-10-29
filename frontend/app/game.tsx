@@ -247,8 +247,8 @@ export default function GameScreen() {
     }
   };
 
-  const makeMove = (piece: Piece, toSquare: Square) => {
-    if (!wsRef.current || !gameState) return;
+  const makeMove = async (piece: Piece, toSquare: Square) => {
+    if (!gameState) return;
 
     const captured: Square[] = [];
     const rowDiff = toSquare.row - piece.square.row;
@@ -274,10 +274,33 @@ export default function GameScreen() {
       promotes
     };
 
-    wsRef.current.send(JSON.stringify({
-      type: 'move',
-      data: move
-    }));
+    // Try WebSocket first, fallback to REST API
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'move',
+        data: move
+      }));
+    } else {
+      // Use REST API
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/room/${roomCode}/move`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(move)
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          Alert.alert('Error', data.error);
+        } else if (data.game_state) {
+          setGameState(data.game_state);
+        }
+      } catch (err) {
+        console.error('Move error:', err);
+        Alert.alert('Error', 'Failed to make move');
+      }
+    }
   };
 
   const renderSquare = (row: number, col: number) => {
