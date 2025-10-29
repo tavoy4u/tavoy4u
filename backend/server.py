@@ -77,8 +77,6 @@ class GameState(BaseModel):
     red_player: Optional[str] = None
     black_player: Optional[str] = None
     mode: str = "american"  # "american" or "jamaican"
-    red_class: str = "jamaican"  # Piece class for red player
-    black_class: str = "jamaican"  # Piece class for black player
     capturing_piece: Optional[Square] = None  # For multi-capture chains
 
 # Import Jamaican engine after model definitions to avoid circular import
