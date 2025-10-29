@@ -1,7 +1,7 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional
 
-if TYPE_CHECKING:
-    from server import Piece, Square, Move, GameState, PieceColor, PieceRank
+# This module expects to be imported by server.py, which will provide the required classes
+# The classes are passed at runtime to avoid circular imports
 
 class JamaicanCheckersEngine:
     """Jamaican Checkers rules engine with multi-capture support"""
