@@ -340,6 +340,30 @@ export default function Game3DScreen() {
     }, 2000);
   };
 
+  // Record win when game ends
+  useEffect(() => {
+    if (gameState?.winner && !winRecorded) {
+      const recordWin = async () => {
+        try {
+          const winnerName = gameState.winner === 'red' ? gameState.red_player_name : gameState.black_player_name;
+          const loserName = gameState.winner === 'red' ? gameState.black_player_name : gameState.red_player_name;
+          
+          if (winnerName && loserName) {
+            await fetch(`${BACKEND_URL}/api/record-win?winner_name=${encodeURIComponent(winnerName)}&loser_name=${encodeURIComponent(loserName)}`, {
+              method: 'POST',
+            });
+            setWinRecorded(true);
+            console.log(`Win recorded: ${winnerName} beat ${loserName}`);
+          }
+        } catch (err) {
+          console.error('Error recording win:', err);
+        }
+      };
+      
+      recordWin();
+    }
+  }, [gameState?.winner, winRecorded]);
+
   const stopPolling = () => {
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
