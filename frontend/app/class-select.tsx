@@ -61,7 +61,10 @@ export default function ClassSelectScreen() {
     }
 
     if (gameType === 'single') {
-      router.push(`/single-player-${mode}?class=${selectedClass}`);
+      const gamePath = is3d 
+        ? `/single-player-${mode}-3d?class=${selectedClass}`
+        : `/single-player-${mode}?class=${selectedClass}`;
+      router.push(gamePath);
     } else {
       // For multiplayer, pass class to create/join game
       router.push(`/mode-select?mode=${mode}&class=${selectedClass}`);
