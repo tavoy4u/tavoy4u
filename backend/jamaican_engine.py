@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List, Optional
 
 # This module expects to be imported by server.py, which will provide the required classes
