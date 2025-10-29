@@ -263,7 +263,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Create Room API"
+    - "Jamaican Mode Integration"
+    - "Piece Class Storage"
+    - "Multiplayer Game Screen - Mode Support"
   stuck_tasks: 
     - "WebSocket Connection"
   test_all: false
