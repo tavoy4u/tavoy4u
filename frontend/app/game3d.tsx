@@ -591,17 +591,26 @@ export default function Game3DScreen() {
           🎮 {mode === 'jamaican' ? 'Jamaican' : 'American'} Checkers
         </Text>
         
+        <View style={styles.playerNames}>
+          <View style={styles.playerNameBox}>
+            <Text style={styles.playerLabel}>🔴 Red Player:</Text>
+            <Text style={styles.playerNameText}>{gameState.red_player_name || 'Waiting...'}</Text>
+          </View>
+          <Text style={styles.vsText}>VS</Text>
+          <View style={styles.playerNameBox}>
+            <Text style={styles.playerLabel}>⚫ Black Player:</Text>
+            <Text style={styles.playerNameText}>{gameState.black_player_name || 'Waiting...'}</Text>
+          </View>
+        </View>
+        
         <Text style={styles.turnText}>
           {gameState.winner 
-            ? `🏆 ${gameState.winner.toUpperCase()} WINS!`
-            : `${gameState.turn === playerColor ? 'YOUR' : "OPPONENT'S"} TURN`
+            ? `🏆 ${gameState.winner.toUpperCase()} (${gameState.winner === 'red' ? gameState.red_player_name : gameState.black_player_name}) WINS!`
+            : `${gameState.turn === playerColor ? '🎯 YOUR' : "⏳ OPPONENT'S"} TURN`
           }
         </Text>
         
         <View style={styles.playerInfo}>
-          <Text style={[styles.playerText, playerColor === 'red' && styles.activePlayer]}>
-            🔴 You ({playerColor.toUpperCase()})
-          </Text>
           <Text style={styles.piecesCount}>
             Red: {gameState.board.filter(p => p.color === 'red').length} | 
             Black: {gameState.board.filter(p => p.color === 'black').length}
