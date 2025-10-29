@@ -48,6 +48,10 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
   const SQUARE_SIZE = 1;
   const BOARD_OFFSET = -3.5;
   
+  // Load DBZ textures for black pieces
+  const dbzManTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-man.png'));
+  const dbzKingTexture = new THREE.TextureLoader().load(require('../assets/pieces/dbz-king.png'));
+  
   return (
     <group>
       {/* Board Base */}
@@ -91,6 +95,7 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
         const z = piece.square.row * SQUARE_SIZE + BOARD_OFFSET;
         const isKing = piece.rank === 'king';
         const isRed = piece.color === 'red';
+        const isBlack = piece.color === 'black';
         
         return (
           <group key={piece.id} position={[x, 0.5, z]}>
@@ -104,8 +109,19 @@ function Board3D({ gameState, onSquareClick, selectedPiece, legalMoves }: any) {
               />
             </mesh>
             
-            {/* King crown */}
-            {isKing && (
+            {/* DBZ Character Sprite for BLACK pieces */}
+            {isBlack && (
+              <sprite position={[0, 0.7, 0]} scale={[0.9, 0.9, 1]}>
+                <spriteMaterial 
+                  map={isKing ? dbzKingTexture : dbzManTexture}
+                  transparent={true}
+                  opacity={1}
+                />
+              </sprite>
+            )}
+            
+            {/* King crown for RED pieces only */}
+            {isKing && isRed && (
               <mesh position={[0, 0.25, 0]} castShadow>
                 <coneGeometry args={[0.2, 0.3, 8]} />
                 <meshStandardMaterial color="#FFD700" metalness={0.9} roughness={0.1} />
